@@ -36,17 +36,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check server and browser JavaScript syntax
+      - name: Check server, app, and checkout JavaScript syntax
         run: |
           node --check server.js
           node <<'NODE'
           const fs = require('node:fs');
           const vm = require('node:vm');
-          const html = fs.readFileSync('public/index.html', 'utf8');
-          const script = html.match(/<script>([\s\S]*?)<\/script>/);
-          if (!script) throw new Error('Inline app script was not found.');
-          new vm.Script(script[1], { filename: 'public/index.html inline script' });
+          for (const file of ['public/index.html', 'public/checkout.html']) {
+            const html = fs.readFileSync(file, 'utf8');
+            const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+            if (!scripts.length) throw new Error(`Inline script was not found in ${file}.`);
+            for (const script of scripts) new vm.Script(script[1], { filename: `${file} inline script` });
+          }
           NODE
+
+      - name: Test payment checkout and subscription flow
+        run: npm test
 
       - name: Smoke test the app
         run: |
@@ -88,6 +93,9 @@ jobs:
               assert.ok(response, `App did not start: ${stderr}`);
               assert.equal(response.status, 200);
               assert.match(await response.text(), /<title>Meetaro<\/title>/);
+              const checkout = await fetch(`http://127.0.0.1:${port}/checkout.html?plan=combo`);
+              assert.equal(checkout.status, 200);
+              assert.match(await checkout.text(), /Payment methods/);
               assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
               assert.equal(response.headers.get('x-frame-options'), 'DENY');
 

@@ -4,7 +4,8 @@
   "description": "Starter dating app: matching, limited free chat, premium plans, video calls",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node --env-file-if-exists=.env server.js",
+    "test": "node --test"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

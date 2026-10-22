@@ -187,7 +187,8 @@
     <section id="tab-plans" class="hide">
       <h1>Plans</h1>
       <p id="mystatus" class="sub"></p>
-      <div class="banner">Test mode: buttons activate plans for free. Real payment (Razorpay) comes next.</div>
+      <button id="cancelRenewal" class="ghost hide" type="button">Cancel auto-renewal</button>
+      <div class="banner">Choose a plan to continue to secure checkout. Payment processing is being set up.</div>
       <div class="plans">
         <div class="plan"><h3>Chat Premium</h3><div class="price">₹99<small>/mo</small></div><ul><li>Unlimited messages</li></ul><button data-plan="chat">Get Chat</button></div>
         <div class="plan"><h3>Video Premium</h3><div class="price">₹150<small>/mo</small></div><ul><li>Video calls with matches</li></ul><button data-plan="video">Get Video</button></div>
@@ -256,7 +257,8 @@ async function start(){
   socket.on('call', onCall);
   socket.on('connect_error', () => toast('Live connection could not be established. Refresh and sign in again.'));
   renderProfileSettings();
-  showTab('discover');
+  const initialTab = new URLSearchParams(location.search).get('tab');
+  showTab(['discover','matches','plans'].includes(initialTab) ? initialTab : 'discover');
   refreshUnread();
 }
 async function refreshUnread(){
@@ -435,11 +437,22 @@ function renderPlans(){
   const parts = [];
   parts.push(me.chat ? 'Chat active until '+f(me.chatUntil) : 'Chat: free ('+me.freeLeft+' messages left)');
   parts.push(me.video ? 'Video active until '+f(me.videoUntil) : 'Video: not active');
+  if(me.autoRenew) parts.push('Auto-renewal enabled');
+  if(me.autoRenewPending) parts.push('Auto-renew mandate awaiting confirmation');
   $('mystatus').textContent = parts.join('  |  ');
+  $('cancelRenewal').classList.toggle('hide', !me.autoRenew && !me.autoRenewPending);
 }
 document.querySelectorAll('[data-plan]').forEach(b => b.onclick = async () => {
-  try { me = await api('/api/subscribe','POST',{plan:b.dataset.plan}); renderPlans(); toast('Plan activated'); } catch(e){ toast(e.message); }
+  window.location.href = '/checkout.html?plan=' + encodeURIComponent(b.dataset.plan);
 });
+$('cancelRenewal').onclick = async () => {
+  try {
+    const result = await api('/api/subscription/cancel','POST',{});
+    me = await api('/api/me');
+    renderPlans();
+    toast(result.message);
+  } catch(e){ toast(e.message); }
+};
 
 // ---------- VIDEO CALL (WebRTC) ----------
 let pc, localStream, callMatch, pendingIce = [];

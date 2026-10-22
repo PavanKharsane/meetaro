@@ -7,6 +7,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,7 +19,8 @@ if (process.env.NODE_ENV === 'production' &&
   throw new Error('Set JWT_SECRET to a unique random value of at least 32 characters before starting in production.');
 }
 const FREE_MESSAGE_LIMIT = 50;           // free messages per user
-const PLAN_DAYS = 30;                    // each purchase lasts 30 days
+const PLAN_DAYS = 30;
+const SUBSCRIPTION_CYCLES = 1200;
 const PLANS = {
   chat:  { name: 'Chat Premium',  price: 99,  chat: true,  video: false },
   video: { name: 'Video Premium', price: 150, chat: false, video: true  },
@@ -34,6 +36,10 @@ db.users ||= [];
 db.likes ||= [];
 db.matches ||= [];
 db.messages ||= [];
+db.orders ||= [];
+db.razorpaySubscriptions ||= [];
+db.razorpayEventIds ||= [];
+db.razorpayPaymentIds ||= [];
 db.users.forEach((u) => {
   u.location ||= '';
   u.interests ||= [];
@@ -44,6 +50,34 @@ const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2
 // ---------- HELPERS ----------
 const hasChat  = (u) => (u.chatUntil  || 0) > Date.now();
 const hasVideo = (u) => (u.videoUntil || 0) > Date.now();
+const planIdFor = (key) => process.env['RAZORPAY_PLAN_' + key.toUpperCase()];
+const paymentConfigReady = () => Boolean(
+  process.env.RAZORPAY_KEY_ID &&
+  process.env.RAZORPAY_KEY_SECRET &&
+  process.env.RAZORPAY_WEBHOOK_SECRET
+);
+function verifyHmac(message, signature, secret) {
+  if (typeof signature !== 'string' || !/^[a-f0-9]{64}$/i.test(signature)) return false;
+  const expected = crypto.createHmac('sha256', secret).update(message).digest();
+  const supplied = Buffer.from(signature, 'hex');
+  return supplied.length === expected.length && crypto.timingSafeEqual(supplied, expected);
+}
+async function razorpayRequest(endpoint, method = 'GET', body) {
+  const apiBase = process.env.NODE_ENV === 'test' && process.env.RAZORPAY_API_BASE_URL
+    ? process.env.RAZORPAY_API_BASE_URL
+    : 'https://api.razorpay.com/v1';
+  const response = await fetch(apiBase + endpoint, {
+    method,
+    headers: {
+      Authorization: 'Basic ' + Buffer.from(process.env.RAZORPAY_KEY_ID + ':' + process.env.RAZORPAY_KEY_SECRET).toString('base64'),
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error?.description || 'Payment provider request failed.');
+  return result;
+}
 const publicUser = (u) => ({
   id: u.id, name: u.name, age: u.age, gender: u.gender, bio: u.bio,
   location: u.location || '', interests: u.interests || [],
@@ -56,6 +90,12 @@ const privateUser = (u) => ({
   video: hasVideo(u),
   chatUntil: u.chatUntil || 0,
   videoUntil: u.videoUntil || 0,
+  autoRenew: Boolean(db.razorpaySubscriptions.slice().reverse().find((subscription) =>
+    subscription.userId === u.id && !['cancelled', 'completed', 'expired'].includes(subscription.status) &&
+    !subscription.cancelAtCycleEnd && !['created', 'authenticated', 'pending'].includes(subscription.status))),
+  autoRenewPending: Boolean(db.razorpaySubscriptions.slice().reverse().find((subscription) =>
+    subscription.userId === u.id && !subscription.cancelAtCycleEnd &&
+    ['created', 'authenticated', 'pending'].includes(subscription.status))),
 });
 const otherOf = (m, id) => (m.a === id ? m.b : m.a);
 const myMatch = (matchId, userId) =>
@@ -90,7 +130,10 @@ function auth(req, res, next) {
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { maxHttpBufferSize: 100000 });
-app.use(express.json({ limit: '50kb' }));
+app.use(express.json({
+  limit: '50kb',
+  verify: (req, res, buffer) => { req.rawBody = Buffer.from(buffer); },
+}));
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -216,19 +259,237 @@ app.post('/api/messages/:matchId/read', auth, (req, res) => {
   res.json({ ok: true });
 });
 
-// Buy a plan  -------------------------------------------------
-// !!! TEST MODE: this gives the plan for free so you can test. !!!
-// Before launch, replace with Razorpay: create the order, verify the
-// payment signature, THEN give the plan. Never give plans without payment.
-app.post('/api/subscribe', auth, (req, res) => {
-  const plan = PLANS[(req.body || {}).plan];
-  if (!plan) return res.status(400).json({ error: 'Unknown plan.' });
-  const u = req.user;
-  const extend = (until) => Math.max(until || 0, Date.now()) + PLAN_DAYS * 864e5;
-  if (plan.chat) u.chatUntil = extend(u.chatUntil);
-  if (plan.video) u.videoUntil = extend(u.videoUntil);
+function activatePaidPlan(user, planKey, until) {
+  if (!Number.isFinite(until) || until <= Date.now()) return false;
+  const plan = PLANS[planKey];
+  if (!plan) return false;
+  if (plan.chat) user.chatUntil = Math.max(user.chatUntil || 0, until);
+  if (plan.video) user.videoUntil = Math.max(user.videoUntil || 0, until);
+  return true;
+}
+
+function activateOrder(order, payment) {
+  if (!order || order.status === 'paid' || db.razorpayPaymentIds.includes(payment.id)) return;
+  if (payment.status !== 'captured' || payment.order_id !== order.id ||
+      payment.amount !== order.amount || payment.currency !== 'INR') return;
+  const user = db.users.find((candidate) => candidate.id === order.userId);
+  if (!user) return;
+  const plan = PLANS[order.planKey];
+  if (!plan) return;
+  const currentExpiry = Math.max(
+    plan.chat ? user.chatUntil || 0 : 0,
+    plan.video ? user.videoUntil || 0 : 0,
+    Date.now(),
+  );
+  const expiry = currentExpiry + PLAN_DAYS * 864e5;
+  activatePaidPlan(user, order.planKey, expiry);
+  order.status = 'paid';
+  order.paymentId = payment.id;
+  db.razorpayPaymentIds.push(payment.id);
+  db.razorpayPaymentIds = db.razorpayPaymentIds.slice(-5000);
   save();
-  res.json(privateUser(u));
+}
+
+function activateSubscription(record, providerSubscription) {
+  const expectedPlanId = planIdFor(record.planKey);
+  const user = db.users.find((candidate) => candidate.id === record.userId);
+  const end = Number(providerSubscription.current_end) * 1000;
+  if (!user || !expectedPlanId || providerSubscription.id !== record.id ||
+      providerSubscription.plan_id !== expectedPlanId ||
+      providerSubscription.notes?.user_id !== record.userId ||
+      providerSubscription.notes?.plan_key !== record.planKey ||
+      providerSubscription.status !== 'active' ||
+      !activatePaidPlan(user, record.planKey, end)) return false;
+  record.status = providerSubscription.status;
+  record.currentEnd = end;
+  save();
+  return true;
+}
+
+app.post('/api/checkout', limit(10, 15 * 60 * 1000), auth, async (req, res) => {
+  const { plan: planKey, autoRenew } = req.body || {};
+  const plan = PLANS[planKey];
+  if (!plan || typeof autoRenew !== 'boolean') return res.status(400).json({ error: 'Choose a valid plan and renewal option.' });
+  if (!paymentConfigReady()) return res.status(503).json({ error: 'Payment checkout is not configured. Set Razorpay test keys and a webhook secret.' });
+
+  try {
+    if (autoRenew) {
+      const existingSubscription = db.razorpaySubscriptions.find((subscription) =>
+        subscription.userId === req.user.id &&
+        ['created', 'authenticated', 'active', 'pending'].includes(subscription.status) &&
+        !subscription.cancelAtCycleEnd);
+      if (existingSubscription) return res.status(409).json({ error: 'You already have an active or pending auto-renewing plan. Cancel it before starting another.' });
+      const planId = planIdFor(planKey);
+      if (!planId) return res.status(503).json({ error: 'Recurring billing is not configured for this plan yet.' });
+      const subscription = await razorpayRequest('/subscriptions', 'POST', {
+        plan_id: planId,
+        total_count: SUBSCRIPTION_CYCLES,
+        quantity: 1,
+        customer_notify: true,
+        notes: { user_id: req.user.id, plan_key: planKey },
+      });
+      db.razorpaySubscriptions.push({
+        id: subscription.id,
+        planId,
+        userId: req.user.id,
+        planKey,
+        status: subscription.status,
+        createdAt: Date.now(),
+        cancelAtCycleEnd: false,
+      });
+      save();
+      return res.json({
+        type: 'subscription',
+        keyId: process.env.RAZORPAY_KEY_ID,
+        subscriptionId: subscription.id,
+        name: plan.name,
+        description: plan.name + ' with monthly auto-renewal',
+        email: req.user.email,
+      });
+    }
+
+    const order = await razorpayRequest('/orders', 'POST', {
+      amount: plan.price * 100,
+      currency: 'INR',
+      receipt: 'meetaro_' + crypto.randomUUID().replaceAll('-', '').slice(0, 24),
+      notes: { user_id: req.user.id, plan_key: planKey },
+    });
+    db.orders.push({
+      id: order.id,
+      userId: req.user.id,
+      planKey,
+      amount: plan.price * 100,
+      status: 'created',
+      createdAt: Date.now(),
+    });
+    save();
+    res.json({
+      type: 'order',
+      keyId: process.env.RAZORPAY_KEY_ID,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      name: plan.name,
+      description: plan.name + ' for 30 days',
+      email: req.user.email,
+    });
+  } catch (error) {
+    console.error('Razorpay checkout initialization failed:', error.message);
+    res.status(502).json({ error: 'Could not start secure checkout. Please try again.' });
+  }
+});
+
+app.post('/api/checkout/verify-order', auth, async (req, res) => {
+  const { plan: planKey, orderId, paymentId, signature } = req.body || {};
+  const order = db.orders.find((candidate) =>
+    candidate.id === orderId && candidate.userId === req.user.id && candidate.planKey === planKey);
+  if (!order || typeof paymentId !== 'string' || typeof signature !== 'string') {
+    return res.status(400).json({ error: 'Invalid checkout confirmation.' });
+  }
+  if (!paymentConfigReady()) return res.status(503).json({ error: 'Payment verification is not configured.' });
+  if (!verifyHmac(orderId + '|' + paymentId, signature, process.env.RAZORPAY_KEY_SECRET)) {
+    return res.status(400).json({ error: 'Payment signature verification failed.' });
+  }
+  if (order.status === 'paid') return res.json(privateUser(req.user));
+
+  try {
+    const payment = await razorpayRequest('/payments/' + encodeURIComponent(paymentId));
+    if (payment.order_id !== order.id || payment.amount !== order.amount || payment.currency !== 'INR') {
+      return res.status(400).json({ error: 'Payment details do not match this order.' });
+    }
+    if (payment.status !== 'captured') return res.status(202).json({ pending: true, message: 'Payment is awaiting confirmation.' });
+    activateOrder(order, payment);
+    res.json(privateUser(req.user));
+  } catch (error) {
+    console.error('Razorpay payment verification failed:', error.message);
+    res.status(502).json({ error: 'Could not verify payment right now. Your payment was not marked complete.' });
+  }
+});
+
+app.post('/api/checkout/verify-subscription', auth, async (req, res) => {
+  const { subscriptionId, paymentId, signature } = req.body || {};
+  const record = db.razorpaySubscriptions.find((subscription) =>
+    subscription.id === subscriptionId && subscription.userId === req.user.id);
+  if (!record || typeof paymentId !== 'string' || typeof signature !== 'string') {
+    return res.status(400).json({ error: 'Invalid subscription confirmation.' });
+  }
+  if (!paymentConfigReady()) return res.status(503).json({ error: 'Subscription verification is not configured.' });
+  if (!verifyHmac(paymentId + '|' + subscriptionId, signature, process.env.RAZORPAY_KEY_SECRET)) {
+    return res.status(400).json({ error: 'Subscription signature verification failed.' });
+  }
+  try {
+    const subscription = await razorpayRequest('/subscriptions/' + encodeURIComponent(subscriptionId));
+    if (subscription.status === 'active' && activateSubscription(record, subscription)) {
+      return res.json(privateUser(req.user));
+    }
+    if (['created', 'authenticated', 'pending'].includes(subscription.status)) {
+      record.status = subscription.status;
+      save();
+      return res.status(202).json({ pending: true, message: 'Your mandate is awaiting confirmation.' });
+    }
+    res.status(409).json({ error: 'The recurring payment mandate was not activated.' });
+  } catch (error) {
+    console.error('Razorpay subscription verification failed:', error.message);
+    res.status(502).json({ error: 'Could not verify the mandate right now. Please check again shortly.' });
+  }
+});
+
+app.post('/api/razorpay/webhook', (req, res) => {
+  const signature = req.get('X-Razorpay-Signature');
+  const eventId = req.get('X-Razorpay-Event-Id');
+  if (!process.env.RAZORPAY_WEBHOOK_SECRET || !req.rawBody ||
+      !verifyHmac(req.rawBody, signature, process.env.RAZORPAY_WEBHOOK_SECRET)) {
+    return res.status(400).json({ error: 'Invalid webhook signature.' });
+  }
+  if (eventId && db.razorpayEventIds.includes(eventId)) return res.json({ ok: true, duplicate: true });
+
+  const event = req.body?.event;
+  if (event === 'payment.captured') {
+    const payment = req.body.payload?.payment?.entity;
+    const order = db.orders.find((candidate) => candidate.id === payment?.order_id);
+    if (order) activateOrder(order, payment);
+  } else if (['subscription.activated', 'subscription.charged', 'subscription.halted',
+    'subscription.cancelled', 'subscription.completed'].includes(event)) {
+    const providerSubscription = req.body.payload?.subscription?.entity;
+    const record = db.razorpaySubscriptions.find((subscription) => subscription.id === providerSubscription?.id);
+    if (record) {
+      record.status = providerSubscription.status;
+      if (providerSubscription.status === 'active') activateSubscription(record, providerSubscription);
+      else save();
+    }
+  }
+  if (eventId) {
+    db.razorpayEventIds.push(eventId);
+    db.razorpayEventIds = db.razorpayEventIds.slice(-5000);
+    save();
+  }
+  res.json({ ok: true });
+});
+
+app.post('/api/subscription/cancel', auth, limit(5, 60 * 60 * 1000), async (req, res) => {
+  const record = db.razorpaySubscriptions.slice().reverse().find((subscription) =>
+    subscription.userId === req.user.id &&
+    ['created', 'authenticated', 'active', 'pending'].includes(subscription.status) &&
+    !subscription.cancelAtCycleEnd);
+  if (!record) return res.status(404).json({ error: 'No active auto-renewing plan was found.' });
+  if (!paymentConfigReady()) return res.status(503).json({ error: 'Subscription management is not configured.' });
+  try {
+    const result = await razorpayRequest('/subscriptions/' + encodeURIComponent(record.id) + '/cancel', 'POST', {
+      cancel_at_cycle_end: true,
+    });
+    record.status = result.status || record.status;
+    record.cancelAtCycleEnd = true;
+    save();
+    res.json({ ok: true, message: 'Auto-renewal is cancelled. Your current paid period remains active.' });
+  } catch (error) {
+    console.error('Razorpay subscription cancellation failed:', error.message);
+    res.status(502).json({ error: 'Could not cancel auto-renewal. Please try again.' });
+  }
+});
+
+app.post('/api/subscribe', auth, (req, res) => {
+  if (!PLANS[(req.body || {}).plan]) return res.status(400).json({ error: 'Unknown plan.' });
+  res.status(410).json({ error: 'Use the secure /api/checkout flow. No payment was taken or plan activated.' });
 });
 
 // ---------- REAL-TIME (chat + video call signalling) ----------

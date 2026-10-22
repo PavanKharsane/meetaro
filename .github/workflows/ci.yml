@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify (Node.js ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22.x, 24.x]
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check server and browser JavaScript syntax
+        run: |
+          node --check server.js
+          node <<'NODE'
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const html = fs.readFileSync('public/index.html', 'utf8');
+          const script = html.match(/<script>([\s\S]*?)<\/script>/);
+          if (!script) throw new Error('Inline app script was not found.');
+          new vm.Script(script[1], { filename: 'public/index.html inline script' });
+          NODE
+
+      - name: Smoke test the app
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const { once } = require('node:events');
+          const net = require('node:net');
+          const { spawn } = require('node:child_process');
+
+          (async () => {
+            const portProbe = net.createServer();
+            await new Promise((resolve, reject) => {
+              portProbe.once('error', reject);
+              portProbe.listen(0, '127.0.0.1', resolve);
+            });
+            const { port } = portProbe.address();
+            await new Promise((resolve, reject) => portProbe.close((error) => error ? reject(error) : resolve()));
+
+            const server = spawn(process.execPath, ['server.js'], {
+              env: { ...process.env, PORT: String(port) },
+              stdio: ['ignore', 'ignore', 'pipe'],
+            });
+            let stderr = '';
+            server.stderr.setEncoding('utf8');
+            server.stderr.on('data', (chunk) => { stderr += chunk; });
+
+            try {
+              let response;
+              for (let attempt = 0; attempt < 40; attempt++) {
+                if (server.exitCode !== null) throw new Error(`App exited during startup: ${stderr}`);
+                try {
+                  response = await fetch(`http://127.0.0.1:${port}/`);
+                  break;
+                } catch {
+                  await new Promise((resolve) => setTimeout(resolve, 150));
+                }
+              }
+
+              assert.ok(response, `App did not start: ${stderr}`);
+              assert.equal(response.status, 200);
+              assert.match(await response.text(), /<title>Meetaro<\/title>/);
+              assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+              assert.equal(response.headers.get('x-frame-options'), 'DENY');
+
+              const unauthorized = await fetch(`http://127.0.0.1:${port}/api/me`);
+              assert.equal(unauthorized.status, 401);
+              console.log('App smoke test passed.');
+            } finally {
+              if (server.exitCode === null) {
+                server.kill('SIGTERM');
+                await once(server, 'exit');
+              }
+            }
+          })().catch((error) => {
+            console.error(error);
+            process.exitCode = 1;
+          });
+          NODE
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev

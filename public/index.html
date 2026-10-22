@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meetaro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#FAF6F7;--ink:#2A1630;--muted:#7A6A80;--berry:#B01C52;--berry-d:#8E1442;--line:#E8DDE3;--card:#fff;--teal:#0E7C6B;--mine:#B01C52}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  h1,h2,h3{font-family:'DM Serif Display',Georgia,serif;font-weight:400;margin:0}
+  button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 18px;background:var(--berry);color:#fff;font-weight:500}
+  button:hover{background:var(--berry-d)}
+  button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  button.ghost:hover{background:#f1e8ec}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #E9A4BD;outline-offset:2px}
+  input,select,textarea{font:inherit;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:10px}
+  .hide{display:none!important}
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap;gap:8px}
+  header h2{font-size:28px;color:var(--berry)}
+  nav{display:flex;gap:6px;flex-wrap:wrap}
+  nav button{background:transparent;color:var(--ink)}
+  nav button.active{background:var(--ink);color:#fff}
+  main{max-width:900px;margin:0 auto;padding:20px}
+  .authbox{max-width:400px;margin:50px auto;background:#fff;padding:28px;border-radius:16px;border:1px solid var(--line)}
+  .authbox h1{font-size:40px;color:var(--berry);margin-bottom:4px}
+  .sub{color:var(--muted);margin-bottom:18px}
+  .link{color:var(--berry);cursor:pointer;text-decoration:underline}
+  .err{color:#B00020;min-height:20px;font-size:14px}
+  .profile{max-width:380px;margin:30px auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center}
+  .avatar{width:110px;height:110px;border-radius:50%;background:var(--berry);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:48px;margin:0 auto 14px}
+  .profile h2{font-size:30px}.profile p{color:var(--muted)}
+  .row{display:flex;gap:12px;justify-content:center;margin-top:18px}
+  .row button{min-width:110px;padding:12px}
+  .empty{text-align:center;color:var(--muted);padding:50px 10px}
+  .chatwrap{display:grid;grid-template-columns:240px 1fr;gap:16px;min-height:480px}
+  @media(max-width:700px){.chatwrap{grid-template-columns:1fr}}
+  .list{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .item{padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer}
+  .item:hover,.item.on{background:#f6edf1}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;height:520px}
+  .phead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);gap:8px}
+  .msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .bub{max-width:75%;padding:8px 13px;border-radius:14px;background:#f1e8ec;word-wrap:break-word;align-self:flex-start;display:flex;align-items:flex-end;gap:7px;animation:message-in .22s ease-out}
+  .bub.me{background:var(--mine);color:#fff;align-self:flex-end}
+  .message-copy{white-space:pre-wrap;overflow-wrap:anywhere}
+  .tick{flex:none;font:600 13px/1 'DM Sans',sans-serif;color:#ead0dc;letter-spacing:-3px;padding:0 3px 1px}
+  .tick.read{color:#79d5ff}
+  .compose{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+  .compose input{margin:0}
+  .note{font-size:13px;color:var(--muted);padding:0 16px 10px}
+  .profile-settings{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 16px}
+  .profile-settings h3{font-size:22px;margin-bottom:4px}
+  .profile-settings p{color:var(--muted);margin:0 0 10px}
+  .profile-settings .pref-row{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+  .profile-settings input,.profile-settings textarea{margin:0}
+  .profile-settings button{margin-top:10px}
+  .rec{display:inline-block;background:#f6edf1;color:var(--berry-d);padding:3px 9px;border-radius:99px;font-size:13px;margin:4px}
+  .item{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .unread{display:inline-flex;min-width:22px;height:22px;padding:0 6px;align-items:center;justify-content:center;background:var(--berry);color:#fff;border-radius:99px;font-size:12px;font-weight:700}
+  .pactions{display:flex;gap:8px}
+  .pactions button{padding:9px 12px}
+  .profile-card{padding:12px 16px;background:#fdf9fb;border-bottom:1px solid var(--line);color:var(--muted)}
+  .profile-card strong{color:var(--ink)}
+  .badge{display:inline-flex;min-width:20px;height:20px;padding:0 6px;align-items:center;justify-content:center;background:#d91f59;color:#fff;border-radius:99px;font-size:12px;margin-left:4px}
+  .notification-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:8px!important;flex:none}
+  .bell-icon{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .notification-btn .badge{position:absolute;top:-5px;right:-5px;margin:0;border:2px solid #fff}
+  .brand{display:flex;align-items:center;gap:8px}
+  .brand-heart{width:25px;height:25px;fill:var(--berry);animation:heartbeat 2.2s ease-in-out infinite}
+  .auth-brand{display:flex;align-items:center;gap:8px}
+  .auth-brand .brand-heart{width:31px;height:31px}
+  .authbox{box-shadow:0 18px 50px #8d325018;position:relative;overflow:hidden}
+  .authbox::before{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-100px;top:-100px;background:radial-gradient(circle,#f7d7e4 0,transparent 70%);pointer-events:none}
+  .romance-banner{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:165px;padding:20px 26px;margin-bottom:16px;border:1px solid #f0d6e1;border-radius:20px;background:linear-gradient(115deg,#fff 12%,#fff4f7 55%,#fce8ef);box-shadow:0 12px 34px #8d32500d}
+  .romance-banner::before,.romance-banner::after{position:absolute;color:#d56a8e;opacity:.25;pointer-events:none}
+  .romance-banner::before{content:"♥";font-size:22px;right:44%;top:17px;animation:float-heart 5s ease-in-out infinite}
+  .romance-banner::after{content:"♥";font-size:14px;right:12%;bottom:18px;animation:float-heart 6s ease-in-out -2s infinite}
+  .romance-copy{position:relative;z-index:1}
+  .romance-copy .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--berry);font-weight:700}
+  .romance-copy h1{font-size:clamp(24px,4vw,36px);line-height:1.15;margin:5px 0;color:#55213d}
+  .romance-copy p{margin:0;color:var(--muted)}
+  .romance-art{width:min(38%,245px);min-width:120px;overflow:visible;animation:art-drift 5s ease-in-out infinite}
+  .romance-art .sparkle{animation:sparkle 2.6s ease-in-out infinite;transform-origin:center}
+  .romance-art .sparkle:nth-of-type(2){animation-delay:.7s}
+  .romance-art .sparkle:nth-of-type(3){animation-delay:1.3s}
+  .avatar{box-shadow:0 9px 22px #b01c5230;transition:transform .25s ease}
+  .profile:hover .avatar{transform:translateY(-3px) rotate(-3deg)}
+  @keyframes heartbeat{0%,100%{transform:scale(1)}8%{transform:scale(1.12)}16%{transform:scale(1)}24%{transform:scale(1.08)}34%{transform:scale(1)}}
+  @keyframes float-heart{0%,100%{transform:translateY(4px) rotate(-9deg);opacity:.15}50%{transform:translateY(-10px) rotate(9deg);opacity:.35}}
+  @keyframes art-drift{0%,100%{transform:translateY(2px) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+  @keyframes sparkle{0%,100%{opacity:.45;transform:scale(.82)}50%{opacity:1;transform:scale(1.12)}}
+  @keyframes message-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:700px){
+    header{padding:10px 12px}
+    header h2{font-size:24px}
+    nav{width:100%;justify-content:space-between}
+    nav button{padding:8px 10px}
+    main{padding:12px}
+    .chatwrap{grid-template-columns:1fr;min-height:0}
+    .list{max-height:180px;overflow:auto}
+    .panel{height:min(68vh,620px);min-height:400px}
+    .profile-settings .pref-row{grid-template-columns:1fr}
+    .phead{flex-wrap:wrap}
+    #local{width:100px;right:12px;bottom:76px}
+    .romance-banner{min-height:140px;padding:17px}
+    .romance-art{width:35%;min-width:100px}
+    .romance-copy p{font-size:14px}
+  }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
+  .plan{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px}
+  .plan.best{border:2px solid var(--teal)}
+  .plan .price{font-family:'DM Serif Display',serif;font-size:36px}
+  .plan ul{padding-left:18px;color:var(--muted)}
+  .plan button{width:100%;margin-top:10px}
+  .banner{background:#FFF4D6;border:1px solid #F0D98A;padding:10px 14px;border-radius:10px;font-size:14px;margin-bottom:12px}
+  #call{position:fixed;inset:0;background:#120817;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+  #remote{width:min(92vw,820px);max-height:70vh;background:#000;border-radius:14px}
+  #local{position:absolute;right:18px;bottom:90px;width:150px;border-radius:10px;border:2px solid #fff;background:#000}
+  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;z-index:60}
+</style>
+</head>
+<body>
+
+<!-- LOGIN / SIGN UP -->
+<div id="auth" class="authbox">
+  <h1 class="auth-brand">Meetaro <svg class="brand-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8.2-4.8-10.3-10C-.3 5.1 5.9 1.5 12 7.2 18.1 1.5 24.3 5.1 22.3 11 20.2 16.2 12 21 12 21z"/></svg></h1>
+  <div class="sub">Meet people. Chat safely.</div>
+  <div id="signupFields" class="hide">
+    <input id="name" placeholder="Your name" autocomplete="name">
+    <input id="age" type="number" min="18" placeholder="Age (18+)">
+    <select id="gender"><option value="">Gender</option><option>Woman</option><option>Man</option><option>Other</option></select>
+    <textarea id="bio" rows="2" placeholder="Short bio"></textarea>
+    <input id="location" placeholder="City or area (optional)">
+    <input id="interests" placeholder="Interests, separated by commas">
+  </div>
+  <input id="email" type="email" placeholder="Email" autocomplete="email">
+  <input id="password" type="password" placeholder="Password (8+ characters)" autocomplete="current-password">
+  <div class="err" id="autherr"></div>
+  <button id="authbtn" style="width:100%">Log in</button>
+  <p class="sub" style="margin-top:14px"><span id="authswitchtxt">New here?</span> <span class="link" id="authswitch">Create an account</span></p>
+</div>
+
+<!-- APP -->
+<div id="app" class="hide">
+  <header>
+    <h2 class="brand"><svg class="brand-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8.2-4.8-10.3-10C-.3 5.1 5.9 1.5 12 7.2 18.1 1.5 24.3 5.1 22.3 11 20.2 16.2 12 21 12 21z"/></svg>Meetaro</h2>
+    <nav>
+      <button data-tab="discover" class="active">Discover</button>
+      <button data-tab="matches">Matches</button>
+      <button data-tab="plans">Plans</button>
+      <button id="notifications" class="ghost notification-btn" aria-label="Notifications" title="Notifications">
+        <svg class="bell-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        <span id="notificationCount" class="badge hide">0</span>
+      </button>
+      <button id="logout" class="ghost">Log out</button>
+    </nav>
+  </header>
+  <main>
+    <section id="tab-discover">
+      <div class="romance-banner">
+        <div class="romance-copy"><span class="eyebrow">A little more heart</span><h1>Meet someone who gets you.</h1><p>Thoughtful matches, warm conversations, real possibilities.</p></div>
+        <svg class="romance-art" viewBox="0 0 260 170" role="img" aria-label="Original illustration of two hearts floating together">
+          <defs><linearGradient id="art-heart" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f18baa"/><stop offset="1" stop-color="#b01c52"/></linearGradient><linearGradient id="art-orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe4ec"/><stop offset="1" stop-color="#f4b9ce"/></linearGradient></defs>
+          <ellipse cx="133" cy="132" rx="91" ry="19" fill="url(#art-orbit)" opacity=".7"/>
+          <circle cx="132" cy="76" r="61" fill="#fff" opacity=".82"/>
+          <path d="M128 116C74 84 87 42 116 48c13 2 17 14 17 14s7-12 20-11c30 2 31 43-25 65z" fill="url(#art-heart)"/>
+          <path d="M134 91c-30-18-23-41-7-40 8 1 10 8 10 8s4-7 11-6c17 1 16 24-14 38z" fill="#f7c7d7" opacity=".85"/>
+          <path class="sparkle" d="M49 48l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#d86a91"/>
+          <path class="sparkle" d="M199 39l2.5 6.5L208 48l-6.5 2.5L199 57l-2.5-6.5L190 48l6.5-2.5z" fill="#d86a91"/>
+          <circle class="sparkle" cx="204" cy="91" r="3" fill="#e6a3b9"/>
+          <path d="M78 119c7-5 12-6 19-4m69-6c7-3 13-2 18 2" fill="none" stroke="#d87898" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div id="profileSettings" class="profile-settings"></div>
+      <div id="discoverCard"></div>
+    </section>
+    <section id="tab-matches" class="hide">
+      <div class="chatwrap">
+        <div class="list" id="matchlist"></div>
+        <div class="panel" id="panel"><div class="empty">Pick a match to start chatting.</div></div>
+      </div>
+    </section>
+    <section id="tab-plans" class="hide">
+      <h1>Plans</h1>
+      <p id="mystatus" class="sub"></p>
+      <div class="banner">Test mode: buttons activate plans for free. Real payment (Razorpay) comes next.</div>
+      <div class="plans">
+        <div class="plan"><h3>Chat Premium</h3><div class="price">₹99<small>/mo</small></div><ul><li>Unlimited messages</li></ul><button data-plan="chat">Get Chat</button></div>
+        <div class="plan"><h3>Video Premium</h3><div class="price">₹150<small>/mo</small></div><ul><li>Video calls with matches</li></ul><button data-plan="video">Get Video</button></div>
+        <div class="plan best"><h3>Combo</h3><div class="price">₹179<small>/mo</small></div><ul><li>Unlimited messages</li><li>Video calls</li><li>Save ₹70</li></ul><button data-plan="combo" style="background:var(--teal)">Get Combo</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- VIDEO CALL SCREEN -->
+<div id="call" class="hide">
+  <video id="remote" autoplay playsinline></video>
+  <video id="local" autoplay playsinline muted></video>
+  <button id="endcall" style="background:#C62828">End call</button>
+</div>
+<div id="toast" class="hide"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let token = localStorage.getItem('token'), me = null, socket = null, current = null, signupMode = false;
+
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.remove('hide'); setTimeout(()=>el.classList.add('hide'),3500); }
+async function api(url, method='GET', body){
+  const r = await fetch(url,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:body?JSON.stringify(body):undefined});
+  const d = await r.json();
+  if(!r.ok){ if(r.status===401) logout(); throw new Error(d.error||'Something went wrong'); }
+  return d;
+}
+
+// ---------- LOGIN / SIGN UP ----------
+$('authswitch').onclick = () => {
+  signupMode = !signupMode;
+  $('signupFields').classList.toggle('hide', !signupMode);
+  $('authbtn').textContent = signupMode ? 'Create account' : 'Log in';
+  $('authswitchtxt').textContent = signupMode ? 'Already have an account?' : 'New here?';
+  $('authswitch').textContent = signupMode ? 'Log in' : 'Create an account';
+};
+$('authbtn').onclick = async () => {
+  $('autherr').textContent = '';
+  const body = { email: $('email').value, password: $('password').value };
+  if (signupMode) Object.assign(body, {
+    name:$('name').value, age:$('age').value, gender:$('gender').value, bio:$('bio').value,
+    location:$('location').value, interests:$('interests').value.split(',').map((item) => item.trim()).filter(Boolean).slice(0, 12),
+  });
+  try {
+    const r = await fetch(signupMode?'/api/signup':'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error);
+    token = d.token; localStorage.setItem('token', token); start();
+  } catch(e){ $('autherr').textContent = e.message; }
+};
+function logout(){ localStorage.removeItem('token'); location.reload(); }
+$('logout').onclick = logout;
+
+// ---------- START APP ----------
+async function start(){
+  try { me = await api('/api/me'); } catch { return; }
+  $('auth').classList.add('hide'); $('app').classList.remove('hide');
+  socket = io({ auth: { token } });
+  socket.on('message', onMessage);
+  socket.on('notification', onNotification);
+  socket.on('read', () => { if (!$('tab-matches').classList.contains('hide')) loadMatches(); });
+  socket.on('receipt', onReceipt);
+  socket.on('call', onCall);
+  socket.on('connect_error', () => toast('Live connection could not be established. Refresh and sign in again.'));
+  renderProfileSettings();
+  showTab('discover');
+  refreshUnread();
+}
+async function refreshUnread(){
+  try {
+    const matches = await api('/api/matches');
+    updateNotificationCount(matches.reduce((sum, match) => sum + match.unread, 0));
+    if (!$('tab-matches').classList.contains('hide')) renderMatches(matches);
+  } catch(e){ toast(e.message); }
+}
+function updateNotificationCount(count){
+  const badge = $('notificationCount');
+  badge.textContent = count > 99 ? '99+' : String(count);
+  badge.classList.toggle('hide', count === 0);
+  const label = count ? `Notifications, ${count} unread messages` : 'Notifications';
+  $('notifications').setAttribute('aria-label', label);
+  $('notifications').title = label;
+}
+async function markRead(matchId){
+  try { await api('/api/messages/'+encodeURIComponent(matchId)+'/read','POST'); await refreshUnread(); }
+  catch(e){ toast(e.message); }
+}
+function renderProfileSettings(){
+  const box = $('profileSettings');
+  box.innerHTML = `<h3>Your recommendations</h3><p>Share a city or area and interests to prioritize people nearby who share them. Location is optional.</p>
+    <div class="pref-row"><input id="prefLocation" maxlength="80" aria-label="Your city or area" placeholder="City or area">
+    <input id="prefInterests" maxlength="400" aria-label="Your interests" placeholder="Interests, separated by commas"></div>
+    <button id="savePreferences">Save preferences</button><span id="preferenceStatus" class="sub"></span>`;
+  $('prefLocation').value = me.location || '';
+  $('prefInterests').value = (me.interests || []).join(', ');
+  $('savePreferences').onclick = async () => {
+    const interests = $('prefInterests').value.split(',').map((item) => item.trim()).filter(Boolean).slice(0, 12);
+    try {
+      const updated = await api('/api/profile','PUT',{location:$('prefLocation').value,interests});
+      Object.assign(me, updated);
+      $('preferenceStatus').textContent = 'Saved';
+      await loadDiscover();
+    } catch(e){ toast(e.message); }
+  };
+}
+document.querySelectorAll('nav [data-tab]').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+$('notifications').onclick = async () => {
+  if ('Notification' in window && Notification.permission === 'default') {
+    try { await Notification.requestPermission(); } catch {}
+  }
+  showTab('matches');
+  await refreshUnread();
+  if (!$('notificationCount').classList.contains('hide')) {
+    const firstUnread = document.querySelector('#matchlist .unread');
+    if (firstUnread) firstUnread.closest('.item').click();
+  } else toast('You are all caught up.');
+};
+function showTab(t){
+  document.querySelectorAll('nav [data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab===t));
+  ['discover','matches','plans'].forEach(x => $('tab-'+x).classList.toggle('hide', x!==t));
+  if(t==='discover') loadDiscover();
+  if(t==='matches') loadMatches();
+  if(t==='plans') renderPlans();
+}
+
+// ---------- DISCOVER ----------
+let queue = [];
+async function loadDiscover(){ queue = await api('/api/discover'); showCard(); }
+function showCard(){
+  const box = $('discoverCard'), p = queue[0];
+  if(!p){ box.innerHTML = '<div class="empty">No new people right now. Invite a friend, or create a second test account.</div>'; return; }
+  const interests = (p.interests || []).map((item) => `<span class="rec">${esc(item)}</span>`).join('');
+  box.innerHTML = `<div class="profile"><div class="avatar">${esc(p.name[0].toUpperCase())}</div>
+    <h2>${esc(p.name)}, ${p.age}</h2><p>${esc(p.gender)}</p><p>${esc(p.bio||'')}</p>
+    <p>${esc(p.location || 'Location not shared')}</p><div>${interests}</div>
+    ${p.recommendation ? `<span class="rec">${esc(p.recommendation)}</span>` : ''}
+    <div class="row"><button class="ghost" id="pass">Pass</button><button id="like">Like</button></div></div>`;
+  $('pass').onclick = () => swipe(false); $('like').onclick = () => swipe(true);
+}
+async function swipe(like){
+  const p = queue.shift();
+  try { const r = await api('/api/like','POST',{toId:p.id,like}); if(r.matched) toast("It's a match with "+r.name+'!'); } catch(e){ toast(e.message); }
+  showCard();
+}
+
+// ---------- MATCHES + CHAT ----------
+async function loadMatches(){
+  const list = await api('/api/matches');
+  updateNotificationCount(list.reduce((sum, match) => sum + match.unread, 0));
+  renderMatches(list);
+}
+function renderMatches(list){
+  $('matchlist').innerHTML = list.length ? '' : '<div class="empty">No matches yet.</div>';
+  list.forEach(m => {
+    const d = document.createElement('div');
+    d.className='item'+(current && current.id===m.id?' on':'');
+    d.dataset.matchId=m.id;
+    d.innerHTML = `<span>${esc(m.user.name)}, ${m.user.age}</span>${m.unread ? `<span class="unread" aria-label="${m.unread} unread messages">${m.unread > 99 ? '99+' : m.unread}</span>` : ''}`;
+    d.onclick = () => { document.querySelectorAll('#matchlist .item').forEach(i=>i.classList.remove('on')); d.classList.add('on'); openChat(m); };
+    $('matchlist').appendChild(d);
+  });
+}
+async function openChat(m){
+  current = m;
+  $('panel').innerHTML = `<div class="phead"><b>${esc(m.user.name)}</b><div class="pactions"><button id="pbtn" class="ghost">Profile</button><button id="vbtn" class="ghost">Video call</button></div></div>
+    <div id="chatProfile" class="profile-card hide"><strong>${esc(m.user.name)}, ${m.user.age}</strong> · ${esc(m.user.location || 'Location not shared')}<br>${esc(m.user.bio || '')}<br>${(m.user.interests || []).map(esc).join(' · ')}</div>
+    <div class="msgs" id="msgs"></div><div class="note" id="note"></div>
+    <div class="compose"><input id="txt" placeholder="Type a message" maxlength="1000"><button id="sendbtn">Send</button></div>`;
+  $('pbtn').onclick = () => $('chatProfile').classList.toggle('hide');
+  await markRead(m.id);
+  const old = await api('/api/messages/'+encodeURIComponent(m.id));
+  if (!current || current.id !== m.id) return;
+  old.forEach(addBubble);
+  updateNote();
+  $('sendbtn').onclick = sendMsg;
+  $('txt').onkeydown = (e) => { if(e.key==='Enter') sendMsg(); };
+  $('vbtn').onclick = startCall;
+}
+function addBubble(msg){
+  if(document.querySelector(`[data-message-id="${CSS.escape(msg.id)}"]`)) return;
+  const d = document.createElement('div'); d.className = 'bub'+(msg.from===me.id?' me':'');
+  d.dataset.messageId = msg.id;
+  const text = document.createElement('span'); text.className = 'message-copy'; text.textContent = msg.text; d.appendChild(text);
+  if(msg.from===me.id){
+    const recipientId = current && current.user.id;
+    const delivered = (msg.deliveredTo || []).includes(recipientId);
+    const read = (msg.readBy || []).includes(recipientId);
+    const tick = document.createElement('span'); tick.className = 'tick'; tick.textContent = '✓';
+    tick.setAttribute('aria-label', 'Sent'); tick.title = 'Sent'; d.appendChild(tick);
+    setTickState(tick, delivered, read);
+  }
+  $('msgs').appendChild(d); $('msgs').scrollTop = 1e9;
+}
+function setTickState(tick, delivered, read){
+  tick.textContent = delivered ? '✓✓' : '✓';
+  tick.classList.toggle('read', read);
+  const status = read ? 'Read' : delivered ? 'Delivered' : 'Sent';
+  tick.setAttribute('aria-label', status);
+  tick.title = status;
+}
+function onReceipt(receipt){
+  const bubble = document.querySelector(`[data-message-id="${CSS.escape(receipt.messageId)}"]`);
+  const tick = bubble && bubble.querySelector('.tick');
+  if(tick) setTickState(tick, receipt.delivered || receipt.read, receipt.read);
+}
+function updateNote(){ if($('note')) $('note').textContent = me.chat ? 'Chat Premium: unlimited messages' : me.freeLeft+' free messages left'; }
+function sendMsg(){
+  const text = $('txt').value.trim(); if(!text) return;
+  socket.emit('send',{matchId:current.id,text},(r)=>{
+    if(r.error==='LIMIT'){ toast('Free messages finished. Get Chat Premium to continue.'); showTab('plans'); return; }
+    if(r.error){ toast(r.error); return; }
+    me.freeLeft = r.freeLeft; updateNote(); $('txt').value='';
+  });
+}
+function onMessage(msg){
+  const isMine = msg.from === me.id;
+  if(current && msg.matchId===current.id && $('msgs')){
+    addBubble(msg);
+    if(!isMine) markRead(msg.matchId);
+  } else if(!isMine) toast('New message');
+  refreshUnread();
+}
+function onNotification(notification){
+  if(!document.hidden || !('Notification' in window) || Notification.permission !== 'granted') return;
+  const notice = new Notification(notification.name+' sent you a message',{
+    body:String(notification.text).slice(0,120),
+    tag:'meetaro-'+notification.matchId,
+  });
+  notice.onclick = () => {
+    window.focus();
+    showTab('matches');
+    loadMatches().then(() => {
+      const match = [...document.querySelectorAll('#matchlist .item')].find((item) => item.dataset.matchId === notification.matchId);
+      if(match) match.click();
+    });
+  };
+}
+
+// ---------- PLANS ----------
+function renderPlans(){
+  const f = (t) => new Date(t).toLocaleDateString();
+  const parts = [];
+  parts.push(me.chat ? 'Chat active until '+f(me.chatUntil) : 'Chat: free ('+me.freeLeft+' messages left)');
+  parts.push(me.video ? 'Video active until '+f(me.videoUntil) : 'Video: not active');
+  $('mystatus').textContent = parts.join('  |  ');
+}
+document.querySelectorAll('[data-plan]').forEach(b => b.onclick = async () => {
+  try { me = await api('/api/subscribe','POST',{plan:b.dataset.plan}); renderPlans(); toast('Plan activated'); } catch(e){ toast(e.message); }
+});
+
+// ---------- VIDEO CALL (WebRTC) ----------
+let pc, localStream, callMatch, pendingIce = [];
+function setupPC(){
+  pc = new RTCPeerConnection({ iceServers:[{urls:'stun:stun.l.google.com:19302'}] });
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pc.ontrack = (e) => { $('remote').srcObject = e.streams[0]; };
+  pc.onicecandidate = (e) => { if(e.candidate) socket.emit('call',{matchId:callMatch,type:'ice',data:e.candidate}); };
+  $('local').srcObject = localStream; $('call').classList.remove('hide');
+}
+async function getMedia(){ return navigator.mediaDevices.getUserMedia({video:true,audio:true}); }
+async function startCall(){
+  if(!me.video){ toast('Video calls need Video Premium or Combo.'); showTab('plans'); return; }
+  try {
+    callMatch = current.id; localStream = await getMedia(); setupPC();
+    const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+    socket.emit('call',{matchId:callMatch,type:'offer',data:offer},(r)=>{
+      if(r && r.error){ endCall(false); toast(r.error==='VIDEO_PREMIUM'?'Video Premium required.':r.error); }
+    });
+  } catch(e){ endCall(false); toast('Could not start camera/microphone: '+e.message); }
+}
+async function onCall({matchId,type,data}){
+  try {
+    if(type==='offer'){
+      if(!confirm('Incoming video call. Accept?')){ socket.emit('call',{matchId,type:'end'}); return; }
+      callMatch = matchId; localStream = await getMedia(); setupPC();
+      await pc.setRemoteDescription(data);
+      pendingIce.forEach(c => pc.addIceCandidate(c)); pendingIce = [];
+      const ans = await pc.createAnswer(); await pc.setLocalDescription(ans);
+      socket.emit('call',{matchId,type:'answer',data:ans});
+    } else if(type==='answer'){ await pc.setRemoteDescription(data); pendingIce.forEach(c=>pc.addIceCandidate(c)); pendingIce=[]; }
+    else if(type==='ice'){ if(pc && pc.remoteDescription) pc.addIceCandidate(data).catch(()=>{}); else pendingIce.push(data); }
+    else if(type==='end'){ endCall(false); }
+  } catch(e){ endCall(false); toast('Could not connect the video call. Check camera permissions and connection.'); }
+}
+function endCall(notify=true){
+  if(notify && callMatch) socket.emit('call',{matchId:callMatch,type:'end'});
+  if(pc){ pc.close(); pc=null; }
+  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
+  pendingIce = []; $('call').classList.add('hide');
+}
+$('endcall').onclick = () => endCall(true);
+
+if(token) start();
+</script>
+</body>
+</html>

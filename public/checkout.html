@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#FAF6F7;--ink:#2A1630;--muted:#7A6A80;--berry:#B01C52;--berry-d:#8E1442;--line:#E8DDE3}
+  :root{--bg:#fbf8f3;--ink:#251719;--muted:#77696a;--berry:#ed5b42;--berry-d:#d94831;--line:#ede5de}
   *{box-sizing:border-box}
   body{margin:0;min-height:100vh;padding:20px;font-family:'DM Sans',system-ui,sans-serif;background:radial-gradient(ellipse at top,#fff 0,#FAF6F7 65%);color:var(--ink);line-height:1.5}
   button,a{font:inherit}
@@ -174,7 +174,7 @@ payButton.onclick = async () => {
       name: 'Meetaro',
       description: checkout.description,
       prefill: { email: checkout.email },
-      theme: { color: '#B01C52' },
+      theme: { color: '#ed5b42' },
       method: checkout.type === 'subscription' ? { card: true, upi: true } : { card: true, upi: true, wallet: true },
       handler: (result) => verifyPayment(result, checkout),
       modal: {

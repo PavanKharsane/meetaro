@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meetaro</title>
+<meta name="theme-color" content="#fbf8f3">
+<meta name="description" content="Meetaro helps you meet people nearby, make thoughtful matches, and start better conversations.">
+<title>Meetaro — meet your kind of person</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
@@ -121,6 +123,123 @@
   #remote{width:min(92vw,820px);max-height:70vh;background:#000;border-radius:14px}
   #local{position:absolute;right:18px;bottom:90px;width:150px;border-radius:10px;border:2px solid #fff;background:#000}
   #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;z-index:60}
+  :root{--bg:#fbf8f3;--ink:#251719;--muted:#77696a;--berry:#ed5b42;--berry-d:#d94831;--line:#ede5de;--card:#fff;--teal:#166b57;--mine:#ed5b42}
+  body{min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#fff 0,transparent 55%),var(--bg)}
+  button{border-radius:999px;font-weight:700}
+  button.ghost{border-color:var(--line)}
+  header{position:sticky;top:0;z-index:10;padding:12px max(24px,calc((100vw - 1160px)/2));box-shadow:0 1px 0 #2517190b}
+  header h2{font-size:29px;color:var(--ink);letter-spacing:-1.2px}
+  .brand-heart{fill:var(--berry)}
+  nav{align-items:center;gap:8px}
+  nav button{padding:10px 15px}
+  nav button.active{background:#fff0eb;color:var(--berry)}
+  main{max-width:1160px;padding:28px 24px 64px}
+  .romance-banner{min-height:174px;padding:27px 34px;border:0;border-radius:26px;background:linear-gradient(110deg,#fff0e9 0%,#fbe8dc 49%,#f2ddd2 100%);box-shadow:none}
+  .romance-banner::before{right:47%;top:22px;color:#ed5b42}
+  .romance-banner::after{right:18%;bottom:22px;color:#ed5b42}
+  .romance-copy .eyebrow{color:var(--berry-d);letter-spacing:.14em}
+  .romance-copy h1{max-width:560px;margin:7px 0;color:var(--ink);font-size:clamp(30px,4vw,43px);letter-spacing:-.8px}
+  .romance-copy p{font-size:15px}
+  .romance-art{width:min(35%,250px)}
+  .profile-settings{max-width:380px;margin:0;background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 12px 36px #49321b0a}
+  .profile-settings h3{font:700 18px 'DM Sans',system-ui,sans-serif;letter-spacing:-.3px}
+  .profile-settings p{font-size:14px;line-height:1.55}
+  .profile-settings input{border-radius:12px;background:#fcfaf8}
+  .profile-settings button{margin-top:13px}
+  .discover-layout{display:grid;grid-template-columns:minmax(250px,320px) minmax(0,1fr);align-items:start;gap:28px;margin-top:24px}
+  .discover-aside{position:sticky;top:100px}
+  .aside-note{margin-top:14px;padding:17px 19px;border-radius:18px;background:#f1e9df;color:#63544c;font-size:14px}
+  .aside-note strong{display:block;margin-bottom:4px;color:var(--ink)}
+  .discover-stage{display:flex;flex-direction:column;align-items:center;min-width:0}
+  .stage-heading{align-self:stretch;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
+  .stage-heading h2{font:700 19px 'DM Sans',system-ui,sans-serif;letter-spacing:-.35px}
+  .stage-heading span{color:var(--muted);font-size:13px}
+  #discoverCard{width:min(100%,560px)}
+  .swipe-card{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:flex-end;min-height:clamp(460px,65vh,620px);overflow:hidden;border:1px solid #ffffffa8;border-radius:28px;background:#d8b7a6;box-shadow:0 24px 65px #4c26181a;touch-action:pan-y;user-select:none;will-change:transform}
+  .swipe-card::before,.swipe-card::after{position:absolute;z-index:0;content:"";pointer-events:none}
+  .swipe-card::before{inset:0;background:radial-gradient(ellipse at 50% 36%,hsl(var(--profile-hue) 58% 81% / .9),transparent 42%),linear-gradient(145deg,hsl(var(--profile-hue) 46% 69%),hsl(calc(var(--profile-hue) + 34) 42% 43%))}
+  .swipe-card::after{inset:30% 0 0;background:linear-gradient(180deg,transparent 0%,#22161420 28%,#211715ed 100%)}
+  .portrait-orbit{position:absolute;top:10%;left:50%;display:grid;width:min(68vw,270px);aspect-ratio:1;place-items:center;transform:translateX(-50%);border:1px solid #ffffff75;border-radius:50%;background:#ffffff18;box-shadow:0 0 0 22px #ffffff0d,0 0 0 48px #ffffff08}
+  .portrait-initial{display:grid;width:64%;aspect-ratio:1;place-items:center;border:8px solid #ffffff75;border-radius:50%;background:linear-gradient(145deg,#ffffff9c,#ffffff36);color:#fff;font:400 clamp(80px,15vw,132px) 'DM Serif Display',Georgia,serif;text-shadow:0 8px 25px #36120d40;box-shadow:0 22px 50px #36120d24}
+  .portrait-label{position:absolute;top:19px;left:19px;padding:8px 12px;border:1px solid #ffffff60;border-radius:999px;background:#281b1840;color:white;font-size:12px;font-weight:700;letter-spacing:.04em;backdrop-filter:blur(10px)}
+  .swipe-card[data-drag="like"]::after,.swipe-card[data-drag="pass"]::after{inset:auto;top:24px;left:auto;right:24px;padding:8px 12px;border:3px solid white;border-radius:9px;background:transparent;color:white;font-size:21px;font-weight:700;letter-spacing:.08em}
+  .swipe-card[data-drag="like"]::after{content:"LIKE";transform:rotate(-10deg)}
+  .swipe-card[data-drag="pass"]::after{content:"PASS";transform:rotate(10deg)}
+  .portrait-orbit,.swipe-details{z-index:1}
+  .portrait-label{z-index:2}
+  .swipe-details{position:relative;z-index:1;padding:26px 27px 20px;color:white}
+  .swipe-title{display:flex;align-items:baseline;gap:9px}
+  .swipe-title h2{font:700 clamp(27px,5vw,38px)/1.1 'DM Sans',system-ui,sans-serif;letter-spacing:-1px}
+  .swipe-title .age{font-size:24px;font-weight:500}
+  .swipe-location{margin:7px 0 0;color:#fffdf0e0;font-size:14px}
+  .swipe-bio{margin:13px 0 0;color:#fffdf0ed;font-size:15px;line-height:1.55}
+  .swipe-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+  .swipe-tags .rec{margin:0;border:1px solid #ffffff55;background:#ffffff1d;color:#fff;font-size:12px;backdrop-filter:blur(8px)}
+  .swipe-recommendation{display:inline-flex;margin-top:12px;padding:5px 10px;border-radius:999px;background:#fff;color:#624a31;font-size:12px;font-weight:700}
+  .swipe-actions{display:flex;align-items:center;justify-content:center;gap:24px;padding:17px 0 3px}
+  .swipe-actions button{display:grid;place-items:center;width:62px;height:62px;padding:0;border:1px solid var(--line);background:#fff;color:var(--berry);box-shadow:0 8px 24px #43251b12;transition:transform .18s ease,box-shadow .18s ease}
+  .swipe-actions button:hover{transform:translateY(-3px);box-shadow:0 12px 27px #43251b1c}
+  .swipe-actions .pass-action{width:52px;height:52px;color:#7b8585}
+  .swipe-actions svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+  .gesture-hint{margin:8px 0 0;color:var(--muted);font-size:12px}
+  .plans{margin-top:20px}
+  .plan{border-radius:20px;box-shadow:0 12px 34px #49321b0a}
+  .plan.best{border-color:var(--teal)}
+  .banner{background:#fff5e7;border-color:#f1dfc2}
+  .authbox{margin:clamp(28px,10vh,90px) auto;padding:32px;border-color:#f0e7df;border-radius:24px;box-shadow:0 28px 80px #49321b15}
+  .authbox h1{color:var(--ink);font-size:38px;letter-spacing:-1px}
+  .auth-brand .brand-heart{fill:var(--berry)}
+  .authbox input,.authbox select,.authbox textarea{border-radius:12px;background:#fcfaf8}
+  .authbox .sub{font-size:14px}
+  .link{font-weight:700;text-decoration:none}
+  .item,.list,.panel{border-color:var(--line);border-radius:18px}
+  .panel{overflow:hidden;box-shadow:0 12px 34px #49321b0a}
+  .item:hover,.item.on{background:#fff3ef}
+  .bub.me{background:var(--berry)}
+  .profile-card{background:#fcf8f3}
+  #toast{border-radius:999px;box-shadow:0 10px 32px #2517192e}
+  @media(max-width:760px){
+    header{padding:10px 16px}
+    header h2{font-size:25px}
+    nav{width:auto;gap:4px}
+    nav button{padding:8px 11px}
+    nav [data-tab]{font-size:13px}
+    main{padding:18px 16px 36px}
+    .discover-layout{grid-template-columns:1fr;gap:18px;margin-top:18px}
+    .discover-aside{position:static}
+    .profile-settings{max-width:none;padding:16px}
+    .aside-note{display:none}
+    .discover-stage{width:100%}
+    #discoverCard{width:min(100%,520px)}
+    .swipe-card{min-height:clamp(430px,61vh,590px);border-radius:24px}
+    .romance-banner{min-height:130px;padding:20px;border-radius:20px}
+    .romance-art{width:32%;min-width:90px}
+  }
+  @media(max-width:560px){
+    header{position:sticky;top:0}
+    header h2{font-size:23px}
+    nav{position:fixed;z-index:30;right:12px;bottom:12px;left:12px;width:auto;justify-content:space-around;gap:3px;padding:7px;border:1px solid #eee5de;border-radius:20px;background:#fff;box-shadow:0 10px 36px #271b1724}
+    nav button{min-height:42px;padding:8px 10px}
+    nav [data-tab]{flex:1;font-size:12px}
+    nav #notifications{width:42px}
+    nav #logout{font-size:12px}
+    main{padding:14px 13px 110px}
+    .romance-banner{display:none}
+    .discover-layout{display:flex;flex-direction:column;gap:22px;margin-top:0}
+    .discover-stage{order:0}
+    .discover-aside{order:1;width:100%}
+    .stage-heading h2{font-size:17px}
+    .stage-heading span{display:none}
+    .swipe-card{min-height:min(570px,61svh);min-height:max(400px,min(570px,61vh))}
+    .portrait-orbit{top:9%;width:min(65vw,240px)}
+    .swipe-details{padding:23px 20px 17px}
+    .swipe-actions{gap:19px}
+    .chatwrap{grid-template-columns:1fr;min-height:0}
+    .list{max-height:160px;overflow:auto}
+    .panel{height:min(62vh,560px);min-height:370px}
+    .profile-settings .pref-row{grid-template-columns:1fr}
+    .phead{flex-wrap:wrap}
+  }
 </style>
 </head>
 <body>
@@ -128,13 +247,13 @@
 <!-- LOGIN / SIGN UP -->
 <div id="auth" class="authbox">
   <h1 class="auth-brand">Meetaro <svg class="brand-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8.2-4.8-10.3-10C-.3 5.1 5.9 1.5 12 7.2 18.1 1.5 24.3 5.1 22.3 11 20.2 16.2 12 21 12 21z"/></svg></h1>
-  <div class="sub">Meet people. Chat safely.</div>
+  <div class="sub">Good people. Real chemistry. Your next story starts here.</div>
   <div id="signupFields" class="hide">
     <input id="name" placeholder="Your name" autocomplete="name">
     <input id="age" type="number" min="18" placeholder="Age (18+)">
     <select id="gender"><option value="">Gender</option><option>Woman</option><option>Man</option><option>Other</option></select>
     <textarea id="bio" rows="2" placeholder="Short bio"></textarea>
-    <input id="location" placeholder="City or area (optional)">
+    <input id="location" placeholder="Your city (e.g. Pune, Mumbai, Bengaluru)">
     <input id="interests" placeholder="Interests, separated by commas">
   </div>
   <input id="email" type="email" placeholder="Email" autocomplete="email">
@@ -162,7 +281,7 @@
   <main>
     <section id="tab-discover">
       <div class="romance-banner">
-        <div class="romance-copy"><span class="eyebrow">A little more heart</span><h1>Meet someone who gets you.</h1><p>Thoughtful matches, warm conversations, real possibilities.</p></div>
+        <div class="romance-copy"><span class="eyebrow">Made for meaningful connections</span><h1>Your city. Your people. Your next hello.</h1><p>Meet nearby, find common ground, and see where it goes.</p></div>
         <svg class="romance-art" viewBox="0 0 260 170" role="img" aria-label="Original illustration of two hearts floating together">
           <defs><linearGradient id="art-heart" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f18baa"/><stop offset="1" stop-color="#b01c52"/></linearGradient><linearGradient id="art-orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe4ec"/><stop offset="1" stop-color="#f4b9ce"/></linearGradient></defs>
           <ellipse cx="133" cy="132" rx="91" ry="19" fill="url(#art-orbit)" opacity=".7"/>
@@ -175,8 +294,16 @@
           <path d="M78 119c7-5 12-6 19-4m69-6c7-3 13-2 18 2" fill="none" stroke="#d87898" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
-      <div id="profileSettings" class="profile-settings"></div>
-      <div id="discoverCard"></div>
+      <div class="discover-layout">
+        <aside class="discover-aside">
+          <div id="profileSettings" class="profile-settings"></div>
+          <div class="aside-note"><strong>Start with what feels right.</strong>Your city and interests help us bring shared connections closer. You choose what to share.</div>
+        </aside>
+        <div class="discover-stage">
+          <div class="stage-heading"><h2>People to meet</h2><span>One good hello can change a day.</span></div>
+          <div id="discoverCard"></div>
+        </div>
+      </div>
     </section>
     <section id="tab-matches" class="hide">
       <div class="chatwrap">
@@ -188,7 +315,7 @@
       <h1>Plans</h1>
       <p id="mystatus" class="sub"></p>
       <button id="cancelRenewal" class="ghost hide" type="button">Cancel auto-renewal</button>
-      <div class="banner">Choose a plan to continue to secure checkout. Payment processing is being set up.</div>
+      <div class="banner">Choose a plan to continue to secure checkout. UPI, cards, and eligible wallets are available through Razorpay.</div>
       <div class="plans">
         <div class="plan"><h3>Chat Premium</h3><div class="price">₹99<small>/mo</small></div><ul><li>Unlimited messages</li></ul><button data-plan="chat">Get Chat</button></div>
         <div class="plan"><h3>Video Premium</h3><div class="price">₹150<small>/mo</small></div><ul><li>Video calls with matches</li></ul><button data-plan="video">Get Video</button></div>
@@ -282,7 +409,7 @@ async function markRead(matchId){
 }
 function renderProfileSettings(){
   const box = $('profileSettings');
-  box.innerHTML = `<h3>Your recommendations</h3><p>Share a city or area and interests to prioritize people nearby who share them. Location is optional.</p>
+  box.innerHTML = `<h3>Make it more you</h3><p>Add your city and interests to bring people with more in common into your discovery mix. Sharing is optional.</p>
     <div class="pref-row"><input id="prefLocation" maxlength="80" aria-label="Your city or area" placeholder="City or area">
     <input id="prefInterests" maxlength="400" aria-label="Your interests" placeholder="Interests, separated by commas"></div>
     <button id="savePreferences">Save preferences</button><span id="preferenceStatus" class="sub"></span>`;
@@ -323,17 +450,72 @@ let queue = [];
 async function loadDiscover(){ queue = await api('/api/discover'); showCard(); }
 function showCard(){
   const box = $('discoverCard'), p = queue[0];
-  if(!p){ box.innerHTML = '<div class="empty">No new people right now. Invite a friend, or create a second test account.</div>'; return; }
+  if(!p){ box.innerHTML = '<div class="empty">You’re all caught up for now.<br>Check back soon to meet someone new.</div>'; return; }
   const interests = (p.interests || []).map((item) => `<span class="rec">${esc(item)}</span>`).join('');
-  box.innerHTML = `<div class="profile"><div class="avatar">${esc(p.name[0].toUpperCase())}</div>
-    <h2>${esc(p.name)}, ${p.age}</h2><p>${esc(p.gender)}</p><p>${esc(p.bio||'')}</p>
-    <p>${esc(p.location || 'Location not shared')}</p><div>${interests}</div>
-    ${p.recommendation ? `<span class="rec">${esc(p.recommendation)}</span>` : ''}
-    <div class="row"><button class="ghost" id="pass">Pass</button><button id="like">Like</button></div></div>`;
+  const hue = Array.from(p.name).reduce((total, character) => total + character.charCodeAt(0), 0) % 360;
+  box.innerHTML = `<article class="swipe-card" style="--profile-hue:${hue}" aria-label="Profile: ${esc(p.name)}, ${p.age}">
+    <span class="portrait-label">A little about them</span>
+    <div class="portrait-orbit" aria-hidden="true"><span class="portrait-initial">${esc(p.name[0].toUpperCase())}</span></div>
+    <div class="swipe-details">
+      <div class="swipe-title"><h2>${esc(p.name)}</h2><span class="age">${p.age}</span></div>
+      <p class="swipe-location">${esc(p.location || 'Location not shared')}</p>
+      ${p.bio ? `<p class="swipe-bio">${esc(p.bio)}</p>` : ''}
+      ${interests ? `<div class="swipe-tags">${interests}</div>` : ''}
+      ${p.recommendation ? `<span class="swipe-recommendation">${esc(p.recommendation)}</span>` : ''}
+    </div>
+  </article>
+  <div class="swipe-actions">
+    <button class="pass-action" id="pass" type="button" aria-label="Pass on ${esc(p.name)}" title="Pass">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+    </button>
+    <button id="like" type="button" aria-label="Like ${esc(p.name)}" title="Like">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
+    </button>
+  </div>
+  <p class="gesture-hint">Swipe right to like · left to pass</p>`;
   $('pass').onclick = () => swipe(false); $('like').onclick = () => swipe(true);
+  bindSwipeGestures(box.querySelector('.swipe-card'));
+}
+function bindSwipeGestures(card){
+  let startX = 0, startY = 0, offsetX = 0, activePointer = null;
+  card.addEventListener('pointerdown', (event) => {
+    if (event.target.closest('button')) return;
+    activePointer = event.pointerId;
+    startX = event.clientX;
+    startY = event.clientY;
+    offsetX = 0;
+    card.setPointerCapture(event.pointerId);
+  });
+  card.addEventListener('pointermove', (event) => {
+    if (event.pointerId !== activePointer) return;
+    offsetX = event.clientX - startX;
+    const offsetY = event.clientY - startY;
+    if (Math.abs(offsetX) < Math.abs(offsetY)) return;
+    card.style.transform = `translateX(${offsetX}px) rotate(${offsetX / 24}deg)`;
+    card.dataset.drag = offsetX > 18 ? 'like' : offsetX < -18 ? 'pass' : '';
+  });
+  const finish = (event) => {
+    if (event.pointerId !== activePointer) return;
+    activePointer = null;
+    if (Math.abs(offsetX) > 95) {
+      const like = offsetX > 0;
+      card.style.transition = 'transform .2s ease, opacity .2s ease';
+      card.style.transform = `translateX(${like ? 120 : -120}vw) rotate(${like ? 18 : -18}deg)`;
+      card.style.opacity = '0';
+      window.setTimeout(() => swipe(like), 170);
+      return;
+    }
+    card.style.transition = 'transform .2s ease';
+    card.style.transform = '';
+    delete card.dataset.drag;
+    window.setTimeout(() => { card.style.transition = ''; }, 220);
+  };
+  card.addEventListener('pointerup', finish);
+  card.addEventListener('pointercancel', finish);
 }
 async function swipe(like){
   const p = queue.shift();
+  if(!p) return;
   try { const r = await api('/api/like','POST',{toId:p.id,like}); if(r.matched) toast("It's a match with "+r.name+'!'); } catch(e){ toast(e.message); }
   showCard();
 }

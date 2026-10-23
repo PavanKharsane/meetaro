@@ -92,7 +92,7 @@ jobs:
 
               assert.ok(response, `App did not start: ${stderr}`);
               assert.equal(response.status, 200);
-              assert.match(await response.text(), /<title>Meetaro<\/title>/);
+              assert.match(await response.text(), /<title>Meetaro \u2014 meet your kind of person<\/title>/);
               const checkout = await fetch(`http://127.0.0.1:${port}/checkout.html?plan=combo`);
               assert.equal(checkout.status, 200);
               assert.match(await checkout.text(), /Payment methods/);

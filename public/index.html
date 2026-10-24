@@ -3,717 +3,992 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#fbf8f3">
-<meta name="description" content="Meetaro helps you meet people nearby, make thoughtful matches, and start better conversations.">
-<title>Meetaro — meet your kind of person</title>
+<meta name="theme-color" content="#f7f4ed">
+<meta name="description" content="Meetaro connects travellers with local hosts, regional food, and thoughtful experiences.">
+<title>Meetaro — travel like you belong</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#FAF6F7;--ink:#2A1630;--muted:#7A6A80;--berry:#B01C52;--berry-d:#8E1442;--line:#E8DDE3;--card:#fff;--teal:#0E7C6B;--mine:#B01C52}
+  :root{--paper:#f7f4ed;--ink:#202923;--muted:#69746b;--green:#235c45;--green-dark:#174432;--lime:#d9e7b4;--orange:#c77242;--line:#e6e1d5;--white:#fffefa;--shadow:0 18px 55px #25382712}
   *{box-sizing:border-box}
-  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-  h1,h2,h3{font-family:'DM Serif Display',Georgia,serif;font-weight:400;margin:0}
-  button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 18px;background:var(--berry);color:#fff;font-weight:500}
-  button:hover{background:var(--berry-d)}
-  button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
-  button.ghost:hover{background:#f1e8ec}
-  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #E9A4BD;outline-offset:2px}
-  input,select,textarea{font:inherit;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;margin-bottom:10px}
+  body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 'DM Sans',system-ui,sans-serif}
+  button,input,select,textarea{font:inherit}
+  button{cursor:pointer}
+  a{color:inherit}
+  h1,h2,h3,p{margin-top:0}
+  h1,h2,.serif{font-family:'DM Serif Display',Georgia,serif;font-weight:400}
   .hide{display:none!important}
-  header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap;gap:8px}
-  header h2{font-size:28px;color:var(--berry)}
-  nav{display:flex;gap:6px;flex-wrap:wrap}
-  nav button{background:transparent;color:var(--ink)}
-  nav button.active{background:var(--ink);color:#fff}
-  main{max-width:900px;margin:0 auto;padding:20px}
-  .authbox{max-width:400px;margin:50px auto;background:#fff;padding:28px;border-radius:16px;border:1px solid var(--line)}
-  .authbox h1{font-size:40px;color:var(--berry);margin-bottom:4px}
-  .sub{color:var(--muted);margin-bottom:18px}
-  .link{color:var(--berry);cursor:pointer;text-decoration:underline}
-  .err{color:#B00020;min-height:20px;font-size:14px}
-  .profile{max-width:380px;margin:30px auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;text-align:center}
-  .avatar{width:110px;height:110px;border-radius:50%;background:var(--berry);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:48px;margin:0 auto 14px}
-  .profile h2{font-size:30px}.profile p{color:var(--muted)}
-  .row{display:flex;gap:12px;justify-content:center;margin-top:18px}
-  .row button{min-width:110px;padding:12px}
-  .empty{text-align:center;color:var(--muted);padding:50px 10px}
-  .chatwrap{display:grid;grid-template-columns:240px 1fr;gap:16px;min-height:480px}
-  @media(max-width:700px){.chatwrap{grid-template-columns:1fr}}
-  .list{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  .item{padding:14px 16px;border-bottom:1px solid var(--line);cursor:pointer}
-  .item:hover,.item.on{background:#f6edf1}
-  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;height:520px}
-  .phead{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);gap:8px}
-  .msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
-  .bub{max-width:75%;padding:8px 13px;border-radius:14px;background:#f1e8ec;word-wrap:break-word;align-self:flex-start;display:flex;align-items:flex-end;gap:7px;animation:message-in .22s ease-out}
-  .bub.me{background:var(--mine);color:#fff;align-self:flex-end}
-  .message-copy{white-space:pre-wrap;overflow-wrap:anywhere}
-  .tick{flex:none;font:600 13px/1 'DM Sans',sans-serif;color:#ead0dc;letter-spacing:-3px;padding:0 3px 1px}
-  .tick.read{color:#79d5ff}
-  .compose{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
-  .compose input{margin:0}
-  .note{font-size:13px;color:var(--muted);padding:0 16px 10px}
-  .profile-settings{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 16px}
-  .profile-settings h3{font-size:22px;margin-bottom:4px}
-  .profile-settings p{color:var(--muted);margin:0 0 10px}
-  .profile-settings .pref-row{display:grid;grid-template-columns:1fr 2fr;gap:10px}
-  .profile-settings input,.profile-settings textarea{margin:0}
-  .profile-settings button{margin-top:10px}
-  .rec{display:inline-block;background:#f6edf1;color:var(--berry-d);padding:3px 9px;border-radius:99px;font-size:13px;margin:4px}
-  .item{display:flex;justify-content:space-between;align-items:center;gap:8px}
-  .unread{display:inline-flex;min-width:22px;height:22px;padding:0 6px;align-items:center;justify-content:center;background:var(--berry);color:#fff;border-radius:99px;font-size:12px;font-weight:700}
-  .pactions{display:flex;gap:8px}
-  .pactions button{padding:9px 12px}
-  .profile-card{padding:12px 16px;background:#fdf9fb;border-bottom:1px solid var(--line);color:var(--muted)}
-  .profile-card strong{color:var(--ink)}
-  .badge{display:inline-flex;min-width:20px;height:20px;padding:0 6px;align-items:center;justify-content:center;background:#d91f59;color:#fff;border-radius:99px;font-size:12px;margin-left:4px}
-  .notification-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;padding:8px!important;flex:none}
-  .bell-icon{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .notification-btn .badge{position:absolute;top:-5px;right:-5px;margin:0;border:2px solid #fff}
-  .brand{display:flex;align-items:center;gap:8px}
-  .brand-heart{width:25px;height:25px;fill:var(--berry);animation:heartbeat 2.2s ease-in-out infinite}
-  .auth-brand{display:flex;align-items:center;gap:8px}
-  .auth-brand .brand-heart{width:31px;height:31px}
-  .authbox{box-shadow:0 18px 50px #8d325018;position:relative;overflow:hidden}
-  .authbox::before{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-100px;top:-100px;background:radial-gradient(circle,#f7d7e4 0,transparent 70%);pointer-events:none}
-  .romance-banner{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:18px;min-height:165px;padding:20px 26px;margin-bottom:16px;border:1px solid #f0d6e1;border-radius:20px;background:linear-gradient(115deg,#fff 12%,#fff4f7 55%,#fce8ef);box-shadow:0 12px 34px #8d32500d}
-  .romance-banner::before,.romance-banner::after{position:absolute;color:#d56a8e;opacity:.25;pointer-events:none}
-  .romance-banner::before{content:"♥";font-size:22px;right:44%;top:17px;animation:float-heart 5s ease-in-out infinite}
-  .romance-banner::after{content:"♥";font-size:14px;right:12%;bottom:18px;animation:float-heart 6s ease-in-out -2s infinite}
-  .romance-copy{position:relative;z-index:1}
-  .romance-copy .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--berry);font-weight:700}
-  .romance-copy h1{font-size:clamp(24px,4vw,36px);line-height:1.15;margin:5px 0;color:#55213d}
-  .romance-copy p{margin:0;color:var(--muted)}
-  .romance-art{width:min(38%,245px);min-width:120px;overflow:visible;animation:art-drift 5s ease-in-out infinite}
-  .romance-art .sparkle{animation:sparkle 2.6s ease-in-out infinite;transform-origin:center}
-  .romance-art .sparkle:nth-of-type(2){animation-delay:.7s}
-  .romance-art .sparkle:nth-of-type(3){animation-delay:1.3s}
-  .avatar{box-shadow:0 9px 22px #b01c5230;transition:transform .25s ease}
-  .profile:hover .avatar{transform:translateY(-3px) rotate(-3deg)}
-  @keyframes heartbeat{0%,100%{transform:scale(1)}8%{transform:scale(1.12)}16%{transform:scale(1)}24%{transform:scale(1.08)}34%{transform:scale(1)}}
-  @keyframes float-heart{0%,100%{transform:translateY(4px) rotate(-9deg);opacity:.15}50%{transform:translateY(-10px) rotate(9deg);opacity:.35}}
-  @keyframes art-drift{0%,100%{transform:translateY(2px) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
-  @keyframes sparkle{0%,100%{opacity:.45;transform:scale(.82)}50%{opacity:1;transform:scale(1.12)}}
-  @keyframes message-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-  @media(max-width:700px){
-    header{padding:10px 12px}
-    header h2{font-size:24px}
-    nav{width:100%;justify-content:space-between}
-    nav button{padding:8px 10px}
-    main{padding:12px}
-    .chatwrap{grid-template-columns:1fr;min-height:0}
-    .list{max-height:180px;overflow:auto}
-    .panel{height:min(68vh,620px);min-height:400px}
-    .profile-settings .pref-row{grid-template-columns:1fr}
-    .phead{flex-wrap:wrap}
-    #local{width:100px;right:12px;bottom:76px}
-    .romance-banner{min-height:140px;padding:17px}
-    .romance-art{width:35%;min-width:100px}
-    .romance-copy p{font-size:14px}
-  }
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:16px}
-  .plan{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px}
-  .plan.best{border:2px solid var(--teal)}
-  .plan .price{font-family:'DM Serif Display',serif;font-size:36px}
-  .plan ul{padding-left:18px;color:var(--muted)}
-  .plan button{width:100%;margin-top:10px}
-  .banner{background:#FFF4D6;border:1px solid #F0D98A;padding:10px 14px;border-radius:10px;font-size:14px;margin-bottom:12px}
-  #call{position:fixed;inset:0;background:#120817;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-  #remote{width:min(92vw,820px);max-height:70vh;background:#000;border-radius:14px}
-  #local{position:absolute;right:18px;bottom:90px;width:150px;border-radius:10px;border:2px solid #fff;background:#000}
-  #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;z-index:60}
-  :root{--bg:#fbf8f3;--ink:#251719;--muted:#77696a;--berry:#ed5b42;--berry-d:#d94831;--line:#ede5de;--card:#fff;--teal:#166b57;--mine:#ed5b42}
-  body{min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#fff 0,transparent 55%),var(--bg)}
-  button{border-radius:999px;font-weight:700}
-  button.ghost{border-color:var(--line)}
-  header{position:sticky;top:0;z-index:10;padding:12px max(24px,calc((100vw - 1160px)/2));box-shadow:0 1px 0 #2517190b}
-  header h2{font-size:29px;color:var(--ink);letter-spacing:-1.2px}
-  .brand-heart{fill:var(--berry)}
-  nav{align-items:center;gap:8px}
-  nav button{padding:10px 15px}
-  nav button.active{background:#fff0eb;color:var(--berry)}
-  main{max-width:1160px;padding:28px 24px 64px}
-  .romance-banner{min-height:174px;padding:27px 34px;border:0;border-radius:26px;background:linear-gradient(110deg,#fff0e9 0%,#fbe8dc 49%,#f2ddd2 100%);box-shadow:none}
-  .romance-banner::before{right:47%;top:22px;color:#ed5b42}
-  .romance-banner::after{right:18%;bottom:22px;color:#ed5b42}
-  .romance-copy .eyebrow{color:var(--berry-d);letter-spacing:.14em}
-  .romance-copy h1{max-width:560px;margin:7px 0;color:var(--ink);font-size:clamp(30px,4vw,43px);letter-spacing:-.8px}
-  .romance-copy p{font-size:15px}
-  .romance-art{width:min(35%,250px)}
-  .profile-settings{max-width:380px;margin:0;background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 12px 36px #49321b0a}
-  .profile-settings h3{font:700 18px 'DM Sans',system-ui,sans-serif;letter-spacing:-.3px}
-  .profile-settings p{font-size:14px;line-height:1.55}
-  .profile-settings input{border-radius:12px;background:#fcfaf8}
-  .profile-settings button{margin-top:13px}
-  .discover-layout{display:grid;grid-template-columns:minmax(250px,320px) minmax(0,1fr);align-items:start;gap:28px;margin-top:24px}
-  .discover-aside{position:sticky;top:100px}
-  .aside-note{margin-top:14px;padding:17px 19px;border-radius:18px;background:#f1e9df;color:#63544c;font-size:14px}
-  .aside-note strong{display:block;margin-bottom:4px;color:var(--ink)}
-  .discover-stage{display:flex;flex-direction:column;align-items:center;min-width:0}
-  .stage-heading{align-self:stretch;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
-  .stage-heading h2{font:700 19px 'DM Sans',system-ui,sans-serif;letter-spacing:-.35px}
-  .stage-heading span{color:var(--muted);font-size:13px}
-  .discover-search{position:relative;display:flex;align-items:center;gap:8px;width:100%;max-width:560px;margin:0 0 15px}
-  .discover-search input{height:48px;margin:0;padding:0 46px 0 16px;border-color:var(--line);border-radius:999px;background:#fff;box-shadow:0 5px 18px #49321b08}
-  .discover-search input::placeholder{color:#96898a}
-  .search-icon{position:absolute;right:17px;width:19px;height:19px;fill:none;stroke:#77696a;stroke-width:1.9;stroke-linecap:round;pointer-events:none}
-  .search-status{width:100%;max-width:560px;margin:-4px 0 9px;color:var(--muted);font-size:13px}
-  .search-empty{padding:45px 18px;border:1px solid var(--line);border-radius:22px;background:#fff;text-align:center;color:var(--muted);box-shadow:0 12px 34px #49321b0a}
-  .search-empty strong{display:block;margin-bottom:5px;color:var(--ink)}
-  .search-empty button{margin-top:13px}
-  #discoverCard{width:min(100%,560px)}
-  .swipe-card{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:flex-end;min-height:clamp(460px,65vh,620px);overflow:hidden;border:1px solid #ffffffa8;border-radius:28px;background:#d8b7a6;box-shadow:0 24px 65px #4c26181a;touch-action:pan-y;user-select:none;will-change:transform}
-  .swipe-card::before,.swipe-card::after{position:absolute;z-index:0;content:"";pointer-events:none}
-  .swipe-card::before{inset:0;background:radial-gradient(ellipse at 50% 36%,hsl(var(--profile-hue) 58% 81% / .9),transparent 42%),linear-gradient(145deg,hsl(var(--profile-hue) 46% 69%),hsl(calc(var(--profile-hue) + 34) 42% 43%))}
-  .swipe-card::after{inset:30% 0 0;background:linear-gradient(180deg,transparent 0%,#22161420 28%,#211715ed 100%)}
-  .portrait-orbit{position:absolute;top:10%;left:50%;display:grid;width:min(68vw,270px);aspect-ratio:1;place-items:center;transform:translateX(-50%);border:1px solid #ffffff75;border-radius:50%;background:#ffffff18;box-shadow:0 0 0 22px #ffffff0d,0 0 0 48px #ffffff08}
-  .portrait-initial{display:grid;width:64%;aspect-ratio:1;place-items:center;border:8px solid #ffffff75;border-radius:50%;background:linear-gradient(145deg,#ffffff9c,#ffffff36);color:#fff;font:400 clamp(80px,15vw,132px) 'DM Serif Display',Georgia,serif;text-shadow:0 8px 25px #36120d40;box-shadow:0 22px 50px #36120d24}
-  .portrait-label{position:absolute;top:19px;left:19px;padding:8px 12px;border:1px solid #ffffff60;border-radius:999px;background:#281b1840;color:white;font-size:12px;font-weight:700;letter-spacing:.04em;backdrop-filter:blur(10px)}
-  .swipe-card[data-drag="like"]::after,.swipe-card[data-drag="pass"]::after{inset:auto;top:24px;left:auto;right:24px;padding:8px 12px;border:3px solid white;border-radius:9px;background:transparent;color:white;font-size:21px;font-weight:700;letter-spacing:.08em}
-  .swipe-card[data-drag="like"]::after{content:"LIKE";transform:rotate(-10deg)}
-  .swipe-card[data-drag="pass"]::after{content:"PASS";transform:rotate(10deg)}
-  .portrait-orbit,.swipe-details{z-index:1}
-  .portrait-label{z-index:2}
-  .swipe-details{position:relative;z-index:1;padding:26px 27px 20px;color:white}
-  .swipe-title{display:flex;align-items:baseline;gap:9px}
-  .swipe-title h2{font:700 clamp(27px,5vw,38px)/1.1 'DM Sans',system-ui,sans-serif;letter-spacing:-1px}
-  .swipe-title .age{font-size:24px;font-weight:500}
-  .swipe-location{margin:7px 0 0;color:#fffdf0e0;font-size:14px}
-  .swipe-bio{margin:13px 0 0;color:#fffdf0ed;font-size:15px;line-height:1.55}
-  .swipe-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
-  .swipe-tags .rec{margin:0;border:1px solid #ffffff55;background:#ffffff1d;color:#fff;font-size:12px;backdrop-filter:blur(8px)}
-  .swipe-recommendation{display:inline-flex;margin-top:12px;padding:5px 10px;border-radius:999px;background:#fff;color:#624a31;font-size:12px;font-weight:700}
-  .swipe-actions{display:flex;align-items:center;justify-content:center;gap:24px;padding:17px 0 3px}
-  .swipe-actions button{display:grid;place-items:center;width:62px;height:62px;padding:0;border:1px solid var(--line);background:#fff;color:var(--berry);box-shadow:0 8px 24px #43251b12;transition:transform .18s ease,box-shadow .18s ease}
-  .swipe-actions button:hover{transform:translateY(-3px);box-shadow:0 12px 27px #43251b1c}
-  .swipe-actions .pass-action{width:52px;height:52px;color:#7b8585}
-  .swipe-actions svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
-  .gesture-hint{margin:8px 0 0;color:var(--muted);font-size:12px}
-  .plans{margin-top:20px}
-  .plan{border-radius:20px;box-shadow:0 12px 34px #49321b0a}
-  .plan.best{border-color:var(--teal)}
-  .banner{background:#fff5e7;border-color:#f1dfc2}
-  .authbox{margin:clamp(28px,10vh,90px) auto;padding:32px;border-color:#f0e7df;border-radius:24px;box-shadow:0 28px 80px #49321b15}
-  .authbox h1{color:var(--ink);font-size:38px;letter-spacing:-1px}
-  .auth-brand .brand-heart{fill:var(--berry)}
-  .authbox input,.authbox select,.authbox textarea{border-radius:12px;background:#fcfaf8}
-  .authbox .sub{font-size:14px}
-  .link{font-weight:700;text-decoration:none}
-  .item,.list,.panel{border-color:var(--line);border-radius:18px}
-  .panel{overflow:hidden;box-shadow:0 12px 34px #49321b0a}
-  .item:hover,.item.on{background:#fff3ef}
-  .bub.me{background:var(--berry)}
-  .profile-card{background:#fcf8f3}
-  #toast{border-radius:999px;box-shadow:0 10px 32px #2517192e}
-  @media(max-width:760px){
-    header{padding:10px 16px}
-    header h2{font-size:25px}
-    nav{width:auto;gap:4px}
-    nav button{padding:8px 11px}
-    nav [data-tab]{font-size:13px}
-    main{padding:18px 16px 36px}
-    .discover-layout{grid-template-columns:1fr;gap:18px;margin-top:18px}
-    .discover-aside{position:static}
-    .profile-settings{max-width:none;padding:16px}
-    .aside-note{display:none}
-    .discover-stage{width:100%}
-    #discoverCard{width:min(100%,520px)}
-    .swipe-card{min-height:clamp(430px,61vh,590px);border-radius:24px}
-    .romance-banner{min-height:130px;padding:20px;border-radius:20px}
-    .romance-art{width:32%;min-width:90px}
-  }
-  @media(max-width:560px){
-    header{position:sticky;top:0}
-    header h2{font-size:23px}
-    nav{position:fixed;z-index:30;right:12px;bottom:12px;left:12px;width:auto;justify-content:space-around;gap:3px;padding:7px;border:1px solid #eee5de;border-radius:20px;background:#fff;box-shadow:0 10px 36px #271b1724}
-    nav button{min-height:42px;padding:8px 10px}
-    nav [data-tab]{flex:1;font-size:12px}
-    nav #notifications{width:42px}
-    nav #logout{font-size:12px}
-    main{padding:14px 13px 110px}
-    .romance-banner{display:none}
-    .discover-layout{display:flex;flex-direction:column;gap:22px;margin-top:0}
-    .discover-stage{order:0}
-    .discover-aside{order:1;width:100%}
-    .stage-heading h2{font-size:17px}
-    .stage-heading span{display:none}
-    .discover-search{margin-bottom:12px}
-    .swipe-card{min-height:min(570px,61svh);min-height:max(400px,min(570px,61vh))}
-    .portrait-orbit{top:9%;width:min(65vw,240px)}
-    .swipe-details{padding:23px 20px 17px}
-    .swipe-actions{gap:19px}
-    .chatwrap{grid-template-columns:1fr;min-height:0}
-    .list{max-height:160px;overflow:auto}
-    .panel{height:min(62vh,560px);min-height:370px}
-    .profile-settings .pref-row{grid-template-columns:1fr}
-    .phead{flex-wrap:wrap}
-  }
+  .shell{width:min(1180px,calc(100% - 40px));margin:auto}
+  .topbar{position:sticky;top:0;z-index:15;background:#f7f4edeF;border-bottom:1px solid #e6e1d5d9;backdrop-filter:blur(16px)}
+  .topbar-inner{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .brand{display:inline-flex;align-items:center;gap:10px;color:var(--green);font:400 27px 'DM Serif Display',Georgia,serif;text-decoration:none;white-space:nowrap}
+  .brand-mark{display:grid;width:34px;height:34px;place-items:center;border-radius:50% 50% 50% 10%;transform:rotate(-45deg);background:var(--green);color:#fff;font:700 19px 'DM Sans',sans-serif}
+  .brand-mark span{transform:rotate(45deg)}
+  .nav{display:flex;align-items:center;gap:6px}
+  .nav button{border:0;border-radius:999px;background:transparent;color:#4b574e;padding:10px 14px;font-weight:600}
+  .nav button:hover,.nav button.active{background:#e8eddf;color:var(--green-dark)}
+  .nav .nav-cta{background:var(--green);color:white;padding:11px 17px}
+  .nav .nav-cta:hover,.primary:hover{background:var(--green-dark)}
+  .nav .user-greeting{padding:0 8px;color:var(--muted);font-size:13px}
+  .menu-button{display:none}
+  main{min-height:70vh}
+  .hero{position:relative;isolation:isolate;display:grid;grid-template-columns:1.02fr .98fr;align-items:center;gap:36px;min-height:440px;padding:62px 0 46px}
+  .hero::before{position:absolute;z-index:-1;inset:0 calc((100% - 100vw)/2);background:linear-gradient(180deg,#f1efe4 0%,var(--paper) 100%);content:""}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--green);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  .eyebrow::before{width:20px;height:1px;background:currentColor;content:""}
+  .hero h1{max-width:620px;margin:16px 0 13px;font-size:clamp(44px,6vw,73px);line-height:.99;letter-spacing:-1.5px}
+  .hero h1 em{color:var(--green);font-weight:400}
+  .hero-copy>p{max-width:495px;margin-bottom:24px;color:#5b665c;font-size:17px}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:10px}
+  .primary,.secondary,.text-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:11px 18px;border:1px solid transparent;border-radius:999px;text-decoration:none;font-weight:700;transition:transform .15s,background .15s}
+  .primary{background:var(--green);color:#fff}
+  .secondary{border-color:var(--line);background:#fffefa;color:var(--ink)}
+  .secondary:hover{background:#f0eee6}
+  .text-button{background:transparent;color:var(--green);padding:8px}
+  .primary:focus-visible,.secondary:focus-visible,.text-button:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #a9bd85;outline-offset:3px}
+  .hero-art{position:relative;min-height:330px;overflow:hidden;border-radius:48% 48% 22px 22px;background:linear-gradient(148deg,#b9ccaf 0%,#698b70 43%,#315c4d 100%);box-shadow:var(--shadow)}
+  .hero-art::before{position:absolute;inset:0;background:radial-gradient(ellipse at 75% 18%,#f2e5b080 0,transparent 28%),linear-gradient(180deg,transparent 50%,#152d247d 100%);content:""}
+  .sun{position:absolute;top:13%;right:17%;width:75px;height:75px;border-radius:50%;background:#f4e2a0;box-shadow:0 0 65px #f4e2a088}
+  .hill{position:absolute;right:-8%;bottom:-30%;width:120%;height:68%;border-radius:50% 50% 0 0;background:#315649;transform:rotate(-8deg)}
+  .hill.back{right:35%;bottom:-28%;width:83%;height:58%;background:#819b78;transform:rotate(12deg)}
+  .water{position:absolute;right:2%;bottom:10%;width:52%;height:19%;border-radius:50%;background:linear-gradient(170deg,#9fc5ad,#d0cda8);transform:rotate(-11deg);opacity:.92}
+  .art-caption{position:absolute;right:23px;bottom:20px;left:23px;z-index:2;color:white}
+  .art-caption span{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.82}
+  .art-caption strong{display:block;margin-top:3px;font:400 25px 'DM Serif Display',Georgia,serif}
+  .float-note{position:absolute;top:21px;left:20px;z-index:3;padding:9px 13px;border:1px solid #ffffff69;border-radius:999px;background:#fffefaeb;color:var(--green-dark);font-size:12px;font-weight:700}
+  .search-panel{position:relative;z-index:4;margin:-4px auto 66px;padding:22px;border:1px solid #e6e1d5;border-radius:20px;background:var(--white);box-shadow:0 15px 50px #283b2d13}
+  .search-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}
+  .search-top h2{margin:0;font:700 17px 'DM Sans',sans-serif}
+  .search-top span{color:var(--muted);font-size:13px}
+  .search-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr .75fr 1fr auto;align-items:end;gap:10px}
+  .field{min-width:0}
+  .field label,.field-label{display:block;margin:0 0 6px;color:#47534a;font-size:12px;font-weight:700}
+  .field input,.field select,.field textarea,.input{width:100%;min-height:44px;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  .field textarea{min-height:80px;resize:vertical}
+  .search-grid .primary{min-height:44px;padding-inline:19px}
+  .section{padding:30px 0 58px}
+  .section-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:20px}
+  .section-heading h2{margin:4px 0 0;font-size:clamp(29px,4vw,42px);line-height:1.08}
+  .section-heading p{max-width:430px;margin:0;color:var(--muted)}
+  .destinations{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .destination{position:relative;display:flex;min-height:172px;align-items:end;overflow:hidden;padding:17px;border:0;border-radius:17px;background:linear-gradient(150deg,var(--d1),var(--d2));color:white;text-align:left;box-shadow:0 10px 28px #283b2d11}
+  .destination::before{position:absolute;inset:0;background:radial-gradient(circle at 70% 10%,#ffffff52 0,transparent 35%),linear-gradient(0deg,#16271b9c,transparent 74%);content:""}
+  .destination .city-illustration{position:absolute;top:20px;right:22px;font-size:50px;filter:drop-shadow(0 5px 8px #202a223a);transition:transform .2s}
+  .destination:hover .city-illustration{transform:translateY(-5px) rotate(4deg)}
+  .destination-copy{position:relative;z-index:1}
+  .destination-copy strong{display:block;font:400 25px 'DM Serif Display',Georgia,serif}
+  .destination-copy span{font-size:12px;opacity:.84}
+  .results-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:22px 0 14px}
+  .results-bar h2{margin:0;font:700 17px 'DM Sans',sans-serif}
+  .results-controls{display:flex;align-items:center;gap:8px}
+  .results-controls select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--white)}
+  .filter-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .filter-row select,.filter-row input{min-height:40px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--white);color:var(--ink)}
+  .listing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .listing-card{overflow:hidden;border:1px solid var(--line);border-radius:18px;background:var(--white);box-shadow:0 10px 35px #283b2d09}
+  .listing-art{position:relative;display:flex;min-height:178px;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(145deg,var(--d1,#d6ddc9),var(--d2,#aebea7))}
+  .listing-art::before,.listing-art::after{position:absolute;border:1px solid #ffffff82;border-radius:50%;content:""}
+  .listing-art::before{width:180px;height:180px}
+  .listing-art::after{width:235px;height:235px}
+  .listing-art .listing-icon{position:relative;z-index:1;font-size:67px;filter:drop-shadow(0 9px 10px #24432d2c)}
+  .listing-type{position:absolute;top:13px;left:13px;padding:6px 10px;border:1px solid #ffffffa3;border-radius:999px;background:#fffefaed;color:var(--green-dark);font-size:11px;font-weight:700}
+  .rating{position:absolute;top:13px;right:13px;padding:6px 9px;border-radius:999px;background:#fffefaed;color:#705231;font-size:12px;font-weight:700}
+  .listing-body{padding:17px}
+  .listing-loc{margin-bottom:6px;color:var(--green);font-size:12px;font-weight:700;letter-spacing:.04em}
+  .listing-body h3{margin-bottom:5px;font:700 19px 'DM Sans',sans-serif;letter-spacing:-.3px}
+  .listing-body p{display:-webkit-box;min-height:46px;margin:0 0 12px;overflow:hidden;color:var(--muted);font-size:13px;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+  .service-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .chip{padding:5px 8px;border-radius:999px;background:#edf1e7;color:#415947;font-size:11px;font-weight:600}
+  .listing-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid var(--line)}
+  .listing-price{color:#394a3c;font-size:12px}
+  .listing-price strong{font-size:16px}
+  .listing-bottom button{min-height:38px;padding:9px 14px}
+  .empty-state{grid-column:1/-1;padding:42px 20px;border:1px dashed #d3d0c3;border-radius:18px;background:#fffefa;text-align:center;color:var(--muted)}
+  .empty-state strong{display:block;margin-bottom:5px;color:var(--ink);font:400 26px 'DM Serif Display',Georgia,serif}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .step{padding:22px;border:1px solid var(--line);border-radius:17px;background:#fffefa}
+  .step-number{display:grid;width:33px;height:33px;place-items:center;margin-bottom:18px;border-radius:50%;background:var(--lime);color:var(--green-dark);font-weight:700}
+  .step h3{margin:0 0 7px;font:700 17px 'DM Sans',sans-serif}
+  .step p{margin:0;color:var(--muted);font-size:13px}
+  .trust-panel{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center;padding:30px;border-radius:20px;background:#e9eddf}
+  .trust-panel h2{margin:7px 0 10px;font-size:36px}
+  .trust-panel p{margin:0;color:#59685b}
+  .trust-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .trust-item{padding:13px;border:1px solid #d5ddc8;border-radius:12px;background:#f8f8f0;font-size:13px;font-weight:600}
+  .page-wrap{padding:38px 0 68px}
+  .page-title{margin-bottom:8px;font-size:clamp(34px,5vw,52px)}
+  .page-subtitle{max-width:720px;margin-bottom:24px;color:var(--muted)}
+  .panel{margin-bottom:17px;padding:22px;border:1px solid var(--line);border-radius:17px;background:var(--white);box-shadow:0 8px 25px #283b2d08}
+  .panel h2,.panel h3{margin-bottom:8px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  .form-grid .full{grid-column:1/-1}
+  .form-grid .field{margin:0}
+  .checkline{display:flex;align-items:flex-start;gap:10px;color:#59645b;font-size:13px}
+  .checkline input{width:18px;height:18px;flex:none;margin:2px 0 0;accent-color:var(--green)}
+  .service-toggle{padding:17px;border:1px solid var(--line);border-radius:13px;background:#fbfaf5}
+  .service-toggle h3{margin-bottom:3px}
+  .service-toggle>p{margin:0 0 12px;color:var(--muted);font-size:13px}
+  .service-toggle .field{margin:9px 0}
+  .status-pill{display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:#edf1e7;color:var(--green-dark);font-size:12px;font-weight:700}
+  .status-pill.pending{background:#fff1d7;color:#80562a}
+  .status-pill.danger{background:#f8e6df;color:#8a3f2d}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  .metric{padding:17px;border:1px solid var(--line);border-radius:14px;background:#fffefa}
+  .metric strong{display:block;font:400 29px 'DM Serif Display',Georgia,serif}
+  .metric span{color:var(--muted);font-size:12px}
+  .record{padding:17px 0;border-top:1px solid var(--line)}
+  .record:first-child{border-top:0}
+  .record-header{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
+  .record h3{margin:0 0 5px;font:700 16px 'DM Sans',sans-serif}
+  .record p{margin:4px 0;color:var(--muted);font-size:13px}
+  .record-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .record-actions button{min-height:37px;padding:8px 13px}
+  .notice{padding:13px 15px;border:1px solid #e6d8b8;border-radius:12px;background:#fff7e8;color:#665337;font-size:13px}
+  .fine-print{color:var(--muted);font-size:12px}
+  .modal-backdrop{position:fixed;z-index:50;inset:0;display:grid;place-items:center;padding:18px;background:#1d2b22a8;backdrop-filter:blur(5px)}
+  .modal{position:relative;width:min(100%,620px);max-height:min(90vh,900px);overflow:auto;padding:24px;border:1px solid var(--line);border-radius:19px;background:var(--white);box-shadow:0 25px 100px #10181060}
+  .modal h2{margin:0 38px 7px 0;font-size:32px}
+  .modal-close{position:absolute;top:14px;right:14px;width:38px;height:38px;border:0;border-radius:50%;background:#eef0e7;color:var(--ink);font-size:22px}
+  .modal-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+  .quote{display:grid;grid-template-columns:1fr auto;gap:7px;padding:14px;border-radius:12px;background:#eef1e7;color:#4c594c;font-size:13px}
+  .quote strong{color:var(--ink)}
+  .auth-modal{width:min(100%,460px)}
+  .toast{position:fixed;z-index:70;right:18px;bottom:18px;max-width:min(400px,calc(100% - 36px));padding:13px 17px;border-radius:13px;background:#202923;color:#fff;box-shadow:var(--shadow)}
+  footer{padding:28px 0;border-top:1px solid var(--line);background:#f0eee6;color:#616c62}
+  .footer-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .footer-links{display:flex;flex-wrap:wrap;gap:14px}
+  .footer-links button{padding:0;border:0;background:none;color:var(--green);font-size:13px;font-weight:600}
+  .footer-meta{display:grid;gap:3px;color:var(--muted);font-size:12px;text-align:right}
+  .trust-panel .trust-copy{max-width:620px}
+  .trust-panel .trust-copy>p{margin:0 0 16px}
+  .trust-actions{display:flex;flex-wrap:wrap;gap:10px}
+  .trust-actions a{min-height:42px}
+  .trust-note{grid-column:1/-1;margin:0;padding-top:12px;border-top:1px solid #d5ddc8;color:#59685b;font-size:12px}
+  @keyframes meetaro-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes meetaro-art{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes meetaro-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @keyframes meetaro-water{0%,100%{transform:rotate(-11deg) translateX(0)}50%{transform:rotate(-8deg) translateX(8px)}}
+  @keyframes meetaro-traveller-walk{0%,57%{transform:translate(0,0)}68%,76%{transform:translate(8px,-2px)}84%,92%{transform:translate(19px,0)}100%{transform:translate(30px,-2px)}}
+  @keyframes meetaro-host-arrives{0%,15%{opacity:0;transform:translate(88px,9px)}27%,63%{opacity:1;transform:translate(0,0)}74%,90%{opacity:1;transform:translate(25px,-2px)}100%{opacity:0;transform:translate(106px,8px)}}
+  @keyframes meetaro-walk-bob{0%,58%,94%,100%{transform:translateY(0)}64%,76%,88%{transform:translateY(-3px)}70%,82%{transform:translateY(0)}}
+  @keyframes meetaro-question{0%,10%,44%,100%{opacity:0;transform:translateY(5px) scale(.88)}16%,36%{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes meetaro-route{0%,50%{stroke-dashoffset:78;opacity:0}63%,95%{stroke-dashoffset:0;opacity:.9}100%{stroke-dashoffset:0;opacity:0}}
+  @keyframes meetaro-step-left{0%,58%{transform:rotate(0)}64%{transform:rotate(-24deg)}70%{transform:rotate(24deg)}76%{transform:rotate(-24deg)}82%{transform:rotate(24deg)}88%{transform:rotate(-20deg)}94%,100%{transform:rotate(0)}}
+  @keyframes meetaro-step-right{0%,58%{transform:rotate(0)}64%{transform:rotate(24deg)}70%{transform:rotate(-24deg)}76%{transform:rotate(24deg)}82%{transform:rotate(-24deg)}88%{transform:rotate(20deg)}94%,100%{transform:rotate(0)}}
+  @keyframes meetaro-think-arm{0%,8%{transform:rotate(0)}12%,22%{transform:rotate(-12deg)}28%,58%{transform:rotate(0)}64%{transform:rotate(24deg)}70%{transform:rotate(-24deg)}76%{transform:rotate(24deg)}82%{transform:rotate(-24deg)}88%{transform:rotate(20deg)}94%,100%{transform:rotate(0)}}
+  @keyframes meetaro-arm-left{0%,58%{transform:rotate(0)}64%{transform:rotate(24deg)}70%{transform:rotate(-24deg)}76%{transform:rotate(24deg)}82%{transform:rotate(-24deg)}88%{transform:rotate(20deg)}94%,100%{transform:rotate(0)}}
+  @keyframes meetaro-arm-right{0%,58%{transform:rotate(0)}64%{transform:rotate(-24deg)}70%{transform:rotate(24deg)}76%{transform:rotate(-24deg)}82%{transform:rotate(24deg)}88%{transform:rotate(-20deg)}94%,100%{transform:rotate(0)}}
+  @keyframes meetaro-guide-arm{0%,24%,57%,100%{transform:rotate(0)}30%{transform:rotate(-28deg)}36%{transform:rotate(-19deg)}43%{transform:rotate(-27deg)}50%{transform:rotate(0)}}
+  @keyframes meetaro-traveller-talk{0%,8%,25%,100%{opacity:0;transform:scaleY(.2)}11%,15%,19%,23%{opacity:1;transform:scaleY(1)}}
+  @keyframes meetaro-host-talk{0%,26%,47%,100%{opacity:0;transform:scaleY(.2)}30%,34%,39%,44%{opacity:1;transform:scaleY(1)}}
+  @keyframes meetaro-blink{0%,43%,46%,78%,81%,100%{transform:scaleY(1)}44.5%,79.5%{transform:scaleY(.12)}}
+  @keyframes meetaro-map-bob{0%,58%,100%{transform:rotate(7deg)}64%{transform:rotate(3deg)}70%{transform:rotate(10deg)}76%{transform:rotate(3deg)}82%{transform:rotate(10deg)}90%{transform:rotate(5deg)}}
+  .hero-copy{animation:meetaro-rise .65s both}
+  .hero-art{animation:meetaro-art .8s .08s both}
+  .sun{animation:meetaro-float 5s ease-in-out infinite}
+  .water{animation:meetaro-water 8s ease-in-out infinite}
+  .hero-story{position:absolute;z-index:1;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .story-traveller{transform-box:view-box;animation:meetaro-traveller-walk 10s ease-in-out infinite}
+  .story-host{transform-box:view-box;opacity:0;animation:meetaro-host-arrives 10s ease-in-out infinite}
+  .story-traveller-body,.story-host-body{transform-box:fill-box;transform-origin:center bottom;animation:meetaro-walk-bob 10s ease-in-out infinite}
+  .story-leg-swing,.story-arm-swing{transform-box:fill-box}
+  .story-traveller-leg-left .story-leg-swing,.story-host-leg-left .story-leg-swing{transform-origin:100% 0;animation:meetaro-step-left 10s ease-in-out infinite}
+  .story-traveller-leg-right .story-leg-swing,.story-host-leg-right .story-leg-swing{transform-origin:0 0;animation:meetaro-step-right 10s ease-in-out infinite}
+  .story-traveller-arm-left .story-arm-swing{transform-origin:100% 100%;animation:meetaro-think-arm 10s ease-in-out infinite}
+  .story-traveller-arm-right .story-arm-swing{transform-origin:0 0;animation:meetaro-arm-right 10s ease-in-out infinite}
+  .story-host-arm-left .story-arm-swing{transform-origin:0 100%}
+  .story-host-arm-right .story-arm-swing{transform-origin:0 100%;animation:meetaro-guide-arm 10s ease-in-out infinite}
+  .story-eye{transform-box:fill-box;transform-origin:center;animation:meetaro-blink 5s ease-in-out infinite}
+  .story-mouth-open{transform-box:fill-box;transform-origin:center;opacity:0}
+  .story-traveller-mouth-open{animation:meetaro-traveller-talk 10s ease-in-out infinite}
+  .story-host-mouth-open{animation:meetaro-host-talk 10s ease-in-out infinite}
+  .story-map{transform-origin:0 0;animation:meetaro-map-bob 10s ease-in-out infinite}
+  .story-question{transform-box:view-box;transform-origin:center;animation:meetaro-question 10s ease-in-out infinite}
+  .story-route{stroke-dasharray:5 7;animation:meetaro-route 10s ease-in-out infinite}
+  .story-cape{fill:#dc8b5a}
+  .story-host-cape{fill:#d9e7b4}
+  .story-ink{fill:#203c31}
+  .story-line{fill:none;stroke:#203c31;stroke-linecap:round;stroke-linejoin:round;stroke-width:5}
+  .story-host-line{fill:none;stroke:#d9e7b4;stroke-linecap:round;stroke-linejoin:round;stroke-width:5}
+  .primary,.secondary,.destination,.nav button,.listing-bottom button,.footer-links a{transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,color .18s ease}
+  .primary:hover,.secondary:hover,.listing-bottom button:hover{transform:translateY(-2px);box-shadow:0 8px 20px #203e2a1a}
+  .destination:hover{transform:translateY(-4px);box-shadow:0 16px 35px #283b2d25}
+  .nav button:hover{transform:translateY(-1px)}
+  .listing-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;animation:meetaro-rise .4s both}
+  .listing-card:nth-child(2){animation-delay:.06s}
+  .listing-card:nth-child(3){animation-delay:.12s}
+  .listing-card:hover{transform:translateY(-4px);border-color:#cbd6bf;box-shadow:0 18px 38px #283b2d18}
+  .field input,.field select,.field textarea{transition:border-color .16s ease,box-shadow .16s ease}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:#72977b;box-shadow:0 0 0 4px #235c4512;outline:0}
+  .footer-links a{color:var(--green);font-size:13px;font-weight:600;text-decoration-thickness:1px;text-underline-offset:3px}
+  .footer-links a:hover{color:var(--green-dark);transform:translateY(-1px)}
+  .modal{max-height:min(90vh,900px);max-height:min(90dvh,900px)}
+  @media(max-width:1000px){.search-grid{grid-template-columns:repeat(3,1fr)}.listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{min-height:400px}}
+  @media(max-width:700px){.shell{width:min(100% - 28px,540px)}.topbar-inner{min-height:66px}.menu-button{display:inline-flex;min-height:44px;align-items:center;justify-content:center;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fffefa;color:var(--green);font-weight:700}.nav{position:absolute;top:65px;right:14px;left:14px;display:none;align-items:stretch;padding:9px;border:1px solid var(--line);border-radius:15px;background:#fffefa;box-shadow:var(--shadow)}.nav.open{display:flex;flex-direction:column}.nav button{text-align:left;min-height:44px}.hero{grid-template-columns:1fr;gap:24px;padding:44px 0 32px}.hero h1{max-width:540px;font-size:clamp(46px,12vw,66px)}.hero-art{min-height:260px}.search-panel{margin:0 auto 30px;padding:16px}.search-grid{grid-template-columns:1fr 1fr}.search-grid .field:first-child{grid-column:1/-1}.search-grid .primary{width:100%}.section{padding:24px 0 42px}.section-heading{align-items:flex-start;flex-direction:column}.destinations{grid-template-columns:1fr 1fr;gap:10px}.destination{min-height:148px;padding:13px}.destination-copy strong{font-size:22px}.destination .city-illustration{top:16px;right:14px;font-size:40px}.steps{grid-template-columns:1fr}.trust-panel{grid-template-columns:1fr;padding:22px}.trust-panel h2{font-size:30px}.metrics{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.page-wrap{padding:26px 0 45px}.panel{padding:17px}.footer-inner{align-items:flex-start;flex-direction:column}.footer-meta{text-align:left}.modal-backdrop{padding:12px}}
+  @media(max-width:480px){.listing-grid{grid-template-columns:1fr}.listing-art{min-height:155px}.search-grid{grid-template-columns:1fr}.search-grid .field:first-child{grid-column:auto}.search-top{align-items:flex-start;flex-direction:column}.results-bar{align-items:flex-start;flex-direction:column}.results-controls{width:100%}.trust-list{grid-template-columns:1fr}.record-header{flex-direction:column}.footer-links{gap:9px}.hero-actions>*{flex:1}.modal{padding:20px}.quote{font-size:12px}.modal-backdrop{align-items:end;padding:0}.modal{width:100%;max-height:92vh;max-height:92dvh;border-radius:20px 20px 0 0;padding:22px 18px calc(20px + env(safe-area-inset-bottom))}.auth-modal{width:100%}.auth-modal .primary{width:100%}.field input,.field select,.field textarea,.input{font-size:16px}.search-panel .primary{min-height:48px}.hero-art{min-height:230px}}
+  @media(max-width:360px){.shell{width:calc(100% - 22px)}.destinations{grid-template-columns:1fr}.destination{min-height:125px}.hero h1{font-size:44px}.hero-actions{flex-direction:column}.hero-actions>*{width:100%}.metrics{grid-template-columns:1fr 1fr}.topbar-inner{gap:10px}.brand{font-size:24px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}.story-host,.story-question{animation:none!important;opacity:1;transform:none}.story-route{animation:none!important;stroke-dashoffset:0;opacity:.9}.story-traveller,.story-traveller-body,.story-host-body{animation:none!important;transform:none}}
 </style>
 </head>
 <body>
-
-<!-- LOGIN / SIGN UP -->
-<div id="auth" class="authbox">
-  <h1 class="auth-brand">Meetaro <svg class="brand-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8.2-4.8-10.3-10C-.3 5.1 5.9 1.5 12 7.2 18.1 1.5 24.3 5.1 22.3 11 20.2 16.2 12 21 12 21z"/></svg></h1>
-  <div class="sub">Good people. Real chemistry. Your next story starts here.</div>
-  <div id="signupFields" class="hide">
-    <input id="name" placeholder="Your name" autocomplete="name">
-    <input id="age" type="number" min="18" placeholder="Age (18+)">
-    <select id="gender"><option value="">Gender</option><option>Woman</option><option>Man</option><option>Other</option></select>
-    <textarea id="bio" rows="2" placeholder="Short bio"></textarea>
-    <input id="location" placeholder="Your city (e.g. Pune, Mumbai, Bengaluru)">
-    <input id="interests" placeholder="Interests, separated by commas">
-  </div>
-  <input id="email" type="email" placeholder="Email" autocomplete="email">
-  <input id="password" type="password" placeholder="Password (8+ characters)" autocomplete="current-password">
-  <div class="err" id="autherr"></div>
-  <button id="authbtn" style="width:100%">Log in</button>
-  <p class="sub" style="margin-top:14px"><span id="authswitchtxt">New here?</span> <span class="link" id="authswitch">Create an account</span></p>
-</div>
-
-<!-- APP -->
-<div id="app" class="hide">
-  <header>
-    <h2 class="brand"><svg class="brand-heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8.2-4.8-10.3-10C-.3 5.1 5.9 1.5 12 7.2 18.1 1.5 24.3 5.1 22.3 11 20.2 16.2 12 21 12 21z"/></svg>Meetaro</h2>
-    <nav>
-      <button data-tab="discover" class="active">Discover</button>
-      <button data-tab="matches">Matches</button>
-      <button data-tab="plans">Plans</button>
-      <button id="notifications" class="ghost notification-btn" aria-label="Notifications" title="Notifications">
-        <svg class="bell-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
-        <span id="notificationCount" class="badge hide">0</span>
-      </button>
-      <button id="logout" class="ghost">Log out</button>
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <a class="brand" href="#" data-nav="home" aria-label="Meetaro home"><span class="brand-mark"><span>M</span></span>Meetaro</a>
+    <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Main navigation">
+      <button type="button" data-nav="home" class="active">Explore</button>
+      <button type="button" data-nav="trips" id="tripsNav" class="hide">My trips</button>
+      <button type="button" data-nav="favorites" id="favoritesNav" class="hide">Saved hosts</button>
+      <button type="button" data-nav="host">Become a host</button>
+      <button type="button" data-nav="host-dashboard" id="hostDashboardNav" class="hide">Host space</button>
+      <button type="button" data-nav="admin" id="adminNav" class="hide">Admin</button>
+      <span id="userGreeting" class="user-greeting hide"></span>
+      <button type="button" id="loginNav">Log in</button>
+      <button type="button" id="logoutNav" class="hide">Log out</button>
+      <button type="button" data-nav="host" class="nav-cta">List your experience</button>
     </nav>
-  </header>
-  <main>
-    <section id="tab-discover">
-      <div class="romance-banner">
-        <div class="romance-copy"><span class="eyebrow">Made for meaningful connections</span><h1>Your city. Your people. Your next hello.</h1><p>Meet nearby, find common ground, and see where it goes.</p></div>
-        <svg class="romance-art" viewBox="0 0 260 170" role="img" aria-label="Original illustration of two hearts floating together">
-          <defs><linearGradient id="art-heart" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f18baa"/><stop offset="1" stop-color="#b01c52"/></linearGradient><linearGradient id="art-orbit" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe4ec"/><stop offset="1" stop-color="#f4b9ce"/></linearGradient></defs>
-          <ellipse cx="133" cy="132" rx="91" ry="19" fill="url(#art-orbit)" opacity=".7"/>
-          <circle cx="132" cy="76" r="61" fill="#fff" opacity=".82"/>
-          <path d="M128 116C74 84 87 42 116 48c13 2 17 14 17 14s7-12 20-11c30 2 31 43-25 65z" fill="url(#art-heart)"/>
-          <path d="M134 91c-30-18-23-41-7-40 8 1 10 8 10 8s4-7 11-6c17 1 16 24-14 38z" fill="#f7c7d7" opacity=".85"/>
-          <path class="sparkle" d="M49 48l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#d86a91"/>
-          <path class="sparkle" d="M199 39l2.5 6.5L208 48l-6.5 2.5L199 57l-2.5-6.5L190 48l6.5-2.5z" fill="#d86a91"/>
-          <circle class="sparkle" cx="204" cy="91" r="3" fill="#e6a3b9"/>
-          <path d="M78 119c7-5 12-6 19-4m69-6c7-3 13-2 18 2" fill="none" stroke="#d87898" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <div class="discover-layout">
-        <aside class="discover-aside">
-          <div id="profileSettings" class="profile-settings"></div>
-          <div class="aside-note"><strong>Start with what feels right.</strong>Your city and interests help us bring shared connections closer. You choose what to share.</div>
-        </aside>
-        <div class="discover-stage">
-          <div class="stage-heading"><h2>People to meet</h2><span>One good hello can change a day.</span></div>
-          <label class="discover-search">
-            <input id="peopleSearch" type="search" maxlength="40" autocomplete="off" placeholder="Search people by name" aria-label="Search people by name">
-            <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4.5 4.5"/></svg>
-          </label>
-          <p id="searchStatus" class="search-status hide" aria-live="polite"></p>
-          <div id="discoverCard"></div>
+  </div>
+</header>
+
+<main>
+  <div class="shell">
+    <section id="homePage" data-page="home">
+      <div class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">Closer to the places you visit</span>
+          <h1>Travel like<br>you <em>belong.</em></h1>
+          <p>Stay with locals, taste the food of a place, and find experiences that don't come in a brochure.</p>
+          <div class="hero-actions">
+            <a class="primary" href="#search" id="heroExplore">Find your local stay <span aria-hidden="true">↗</span></a>
+            <button class="secondary" type="button" data-nav="host">Share your city</button>
+          </div>
+        </div>
+        <div class="hero-art" role="img" aria-label="A traveller wonders how to plan an affordable trip. A local Meetaro host arrives with a map, and they set off to explore together.">
+          <span class="sun"></span><span class="hill back"></span><span class="water"></span><span class="hill"></span>
+          <svg class="hero-story" viewBox="0 0 600 360" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="storyMap" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf3"/><stop offset="1" stop-color="#e6edd7"/></linearGradient>
+              <filter id="storyShadow" x="-.3" y="-.3" width="1.6" height="1.7"><feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#16382a" flood-opacity=".2"/></filter>
+            </defs>
+            <g transform="translate(88 -18)">
+            <path class="story-route" d="M245 272c26-32 43 13 67-14s43-4 62-25 45 7 69-22" fill="none" stroke="#f5e6a9" stroke-linecap="round" stroke-width="4"/>
+            <g class="story-question" filter="url(#storyShadow)">
+              <path d="M145 121c0-16 13-28 29-28h56c16 0 28 12 28 28s-12 27-28 27h-27l-17 15 3-15h-15c-16 0-29-11-29-27z" fill="#fffefa"/>
+              <text x="202" y="132" text-anchor="middle" fill="#235c45" font-family="DM Sans, sans-serif" font-size="24" font-weight="700">₹?</text>
+              <circle cx="166" cy="171" r="4" fill="#fffefa"/><circle cx="154" cy="180" r="2.5" fill="#fffefa"/>
+            </g>
+            <g class="story-traveller">
+              <g class="story-traveller-body" filter="url(#storyShadow)">
+                <path d="M191 250c-1-23 10-38 27-38s28 15 27 38l-3 27h-47z" class="story-cape"/>
+                <g class="story-traveller-arm-left" transform="translate(195 236)"><g class="story-arm-swing"><path d="M0 0l-8-18-1-10" class="story-line"/><circle cx="-9" cy="-30" r="3.5" fill="#d69b73"/></g></g>
+                <g class="story-traveller-arm-right" transform="translate(247 236)"><g class="story-arm-swing"><path d="M0 0l11 13 4 8" class="story-line"/><circle cx="16" cy="23" r="3.5" fill="#d69b73"/></g></g>
+                <g class="story-traveller-leg-left" transform="translate(204 275)"><g class="story-leg-swing"><path d="M0 0l-7 18-5 0m-2 0h15" class="story-line"/></g></g>
+                <g class="story-traveller-leg-right" transform="translate(237 275)"><g class="story-leg-swing"><path d="M0 0l7 18 5 0m-2 0h9" class="story-line"/></g></g>
+                <path d="M194 218c-7-8-7-19-3-27l9 2 3-10c11-6 28 1 32 12l-3 18-9 4z" fill="#d69b73"/>
+                <path d="M194 203c-7-13 0-26 13-29 13-4 25 3 29 14-9-3-17-6-25-10-2 8-8 13-17 15z" fill="#283b32"/>
+                <circle cx="211" cy="203" r="2" class="story-ink story-eye"/>
+                <circle cx="221" cy="203" r="2" class="story-ink story-eye"/>
+                <path d="M214 212q4-3 8 0" fill="none" stroke="#824e3a" stroke-linecap="round" stroke-width="2"/>
+                <path d="M214 211q4-3 8 0q-4 9-8 0z" fill="#824e3a" class="story-mouth-open story-traveller-mouth-open"/>
+                <path d="M177 236l-11 3 3 18 12-4z" fill="#235c45"/>
+                <path d="M180 237l-3 17" fill="none" stroke="#d9e7b4" stroke-width="2"/>
+              </g>
+            </g>
+            <g class="story-host">
+              <g class="story-host-body" filter="url(#storyShadow)">
+                <path d="M316 250c-1-23 10-38 27-38s28 15 27 38l-3 27h-47z" class="story-host-cape"/>
+                <g class="story-host-arm-left" transform="translate(320 236)"><g class="story-arm-swing"><path d="M0 0l-11 24" class="story-host-line"/><circle cx="-12" cy="26" r="3.5" fill="#c98561"/></g></g>
+                <g class="story-host-arm-right" transform="translate(370 236)"><g class="story-arm-swing"><path d="M0 0l17-17 10-7" class="story-host-line"/><circle cx="29" cy="-25" r="3.5" fill="#c98561"/></g></g>
+                <g class="story-host-leg-left" transform="translate(329 275)"><g class="story-leg-swing"><path d="M0 0l-7 18-5 0m-2 0h15" class="story-line"/></g></g>
+                <g class="story-host-leg-right" transform="translate(362 275)"><g class="story-leg-swing"><path d="M0 0l7 18 5 0m-2 0h9" class="story-line"/></g></g>
+                <path d="M319 218c-7-8-7-19-3-27l9 2 3-10c11-6 28 1 32 12l-3 18-9 4z" fill="#c98561"/>
+                <path d="M318 201c-4-14 5-25 18-26 12-2 22 6 24 18-8-3-15-8-20-15-5 8-12 13-22 13z" fill="#202923"/>
+                <circle cx="338" cy="203" r="2" class="story-ink story-eye"/>
+                <circle cx="348" cy="203" r="2" class="story-ink story-eye"/>
+                <path d="M338 212q5 5 10 0" fill="none" stroke="#824e3a" stroke-linecap="round" stroke-width="2"/>
+                <path d="M338 211q5 6 10 0q-5 9-10 0z" fill="#824e3a" class="story-mouth-open story-host-mouth-open"/>
+                <g transform="translate(369 192)">
+                  <g class="story-map">
+                    <g transform="rotate(7)">
+                      <rect width="35" height="43" rx="4" fill="url(#storyMap)" stroke="#235c45" stroke-width="2"/>
+                      <path d="M7 12l8-5 7 5 7-5v25l-7 5-7-5-8 5z" fill="none" stroke="#5b8460" stroke-width="2"/>
+                      <path d="M19 26c0-5 8-5 8 0 0 4-4 8-4 8s-4-4-4-8z" fill="#c77242"/>
+                      <circle cx="23" cy="26" r="1.5" fill="#fffefa"/>
+                    </g>
+                  </g>
+                </g>
+              </g>
+              <g transform="translate(321 146)">
+                <rect width="92" height="20" rx="10" fill="#fffefa" opacity=".96"/>
+                <circle cx="11" cy="10" r="6.5" fill="#235c45"/>
+                <text x="11" y="12.5" text-anchor="middle" fill="#fffefa" font-family="DM Sans, sans-serif" font-size="7" font-weight="700">M</text>
+                <text x="22" y="13" fill="#235c45" font-family="DM Sans, sans-serif" font-size="8" font-weight="700" letter-spacing=".5">MEETARO HOST</text>
+              </g>
+            </g>
+            <g transform="translate(446 213)" opacity=".88">
+              <path d="M0 48V5" stroke="#f4e2a0" stroke-width="3"/>
+              <path d="M2 6h30l-9 9 9 9H2z" fill="#f4e2a0"/>
+              <path d="M-8 48h18" stroke="#f4e2a0" stroke-linecap="round" stroke-width="3"/>
+            </g>
+            </g>
+          </svg>
+          <span class="float-note">Made for curious travellers</span>
+          <div class="art-caption"><span>Find your own way in</span><strong>The best trips feel personal.</strong></div>
         </div>
       </div>
+
+      <form class="search-panel" id="searchForm">
+        <div class="search-top"><h2>Where would you like to go?</h2><span>Tell us what a good trip looks like to you.</span></div>
+        <div class="search-grid">
+          <div class="field"><label for="searchCity">Destination</label><input id="searchCity" name="city" maxlength="80" placeholder="Try Pune, Jaipur, Kochi" autocomplete="address-level2"></div>
+          <div class="field"><label for="arrivalDate">Check in</label><input id="arrivalDate" name="arrivalDate" type="date" required></div>
+          <div class="field"><label for="departureDate">Check out</label><input id="departureDate" name="departureDate" type="date" required></div>
+          <div class="field"><label for="travellerCount">Guests</label><input id="travellerCount" name="travellers" type="number" min="1" max="12" value="2" required></div>
+          <div class="field"><label for="searchBudget">Budget / service (₹)</label><input id="searchBudget" name="maxBudget" type="number" min="0" step="100" placeholder="Any budget"></div>
+          <button class="primary" type="submit">Explore stays</button>
+        </div>
+      </form>
+
+      <section class="section" aria-labelledby="destHeading">
+        <div class="section-heading"><div><span class="eyebrow">Start somewhere wonderful</span><h2 id="destHeading">Explore India, locally.</h2></div><p>Choose a city to find hosts, home-cooked regional meals, and neighbourhood experiences. Listings are published only after host approval.</p></div>
+        <div class="destinations">
+          <button class="destination" type="button" data-city="Jaipur" style="--d1:#cc9477;--d2:#773f39"><span class="city-illustration" aria-hidden="true">🏰</span><span class="destination-copy"><strong>Jaipur</strong><span>Old lanes &amp; pink stone</span></span></button>
+          <button class="destination" type="button" data-city="Kochi" style="--d1:#84aaa0;--d2:#356a61"><span class="city-illustration" aria-hidden="true">⛵</span><span class="destination-copy"><strong>Kochi</strong><span>Harbour stories &amp; spice</span></span></button>
+          <button class="destination" type="button" data-city="Pune" style="--d1:#b9a77d;--d2:#536b54"><span class="city-illustration" aria-hidden="true">🌿</span><span class="destination-copy"><strong>Pune</strong><span>Hill air &amp; local tables</span></span></button>
+          <button class="destination" type="button" data-city="Varanasi" style="--d1:#cf9b65;--d2:#864c39"><span class="city-illustration" aria-hidden="true">🪷</span><span class="destination-copy"><strong>Varanasi</strong><span>River mornings &amp; heritage</span></span></button>
+        </div>
+      </section>
+
+      <section class="section" id="resultsSection" aria-labelledby="resultsHeading">
+        <div class="section-heading"><div><span class="eyebrow">Thoughtfully hosted</span><h2 id="resultsHeading">Find your local people.</h2></div><p>Real host profiles, transparent prices, and availability confirmed directly by the people who welcome you.</p></div>
+        <div class="filter-row">
+          <select id="serviceFilter" aria-label="Filter by service"><option value="">All services</option><option value="accommodation">Stay</option><option value="food">Regional food</option><option value="exploration">Local experiences</option></select>
+          <select id="genderFilter" aria-label="Preferred host gender"><option value="">Any host</option><option value="woman">Woman host</option><option value="man">Man host</option></select>
+          <select id="sortFilter" aria-label="Sort results"><option value="recommended">Recommended</option><option value="price">Price: low to high</option><option value="rating">Rating: high to low</option></select>
+          <input id="interestFilter" type="search" maxlength="80" placeholder="Interests or experience" aria-label="Search interests and experiences">
+        </div>
+        <div class="results-bar"><h2 id="resultsHeadingCount">Local hosts</h2><div class="results-controls"><label class="fine-print" for="resultsBudget">Max service price</label><input id="resultsBudget" type="number" min="0" placeholder="₹ any" aria-label="Maximum service price"></div></div>
+        <div id="listingGrid" class="listing-grid" aria-live="polite"><div class="empty-state"><strong>Find a place, find your people.</strong>Search a city or pick a destination to discover available hosts.</div></div>
+      </section>
+
+      <section class="section" aria-labelledby="howHeading">
+        <div class="section-heading"><div><span class="eyebrow">Simple by design</span><h2 id="howHeading">A more human way to travel.</h2></div></div>
+        <div class="steps">
+          <article class="step"><span class="step-number">1</span><h3>Choose your kind of trip</h3><p>Search by destination, dates, budget, and the experiences that matter to you.</p></article>
+          <article class="step"><span class="step-number">2</span><h3>Meet a local host</h3><p>Choose a stay, a home-cooked meal, a local walk, or a mix. See the estimate up front.</p></article>
+          <article class="step"><span class="step-number">3</span><h3>Request, then confirm</h3><p>Your host checks availability and accepts first. You confirm the final details before a booking is made.</p></article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="trust-panel" aria-labelledby="trustHeading">
+          <div class="trust-copy"><span class="eyebrow">People first, always</span><h2 id="trustHeading">Trust grows with clear expectations.</h2><p>Know what has been reviewed, what happens before a booking is confirmed, and how to reach Meetaro. We explain the limits of this prototype rather than promise guarantees we cannot make.</p><div class="trust-actions"><button class="secondary" type="button" data-nav="safety">Read safety &amp; privacy</button><a class="text-button" href="mailto:meetaro@zohomail.in">Contact Meetaro ↗</a></div></div>
+          <div class="trust-list"><div class="trust-item">New accounts verify their email</div><div class="trust-item">Host applications are manually reviewed before listing</div><div class="trust-item">A host accepts before you confirm the final price</div><div class="trust-item">Exact stay address is shared only after confirmation</div></div>
+          <p class="trust-note">Host review is not a safety guarantee. Meetaro does not process payments or provide emergency response in this prototype.</p>
+        </div>
+      </section>
     </section>
-    <section id="tab-matches" class="hide">
-      <div class="chatwrap">
-        <div class="list" id="matchlist"></div>
-        <div class="panel" id="panel"><div class="empty">Pick a match to start chatting.</div></div>
-      </div>
+
+    <section class="page-wrap hide" id="hostPage" data-page="host">
+      <span class="eyebrow">Your neighbourhood, through your eyes</span><h1 class="page-title">Welcome travellers to your city.</h1>
+      <p class="page-subtitle">Offer a room, a regional meal, a local experience, or a combination. Every application is reviewed before a profile can appear publicly. Do not upload identity or property documents here; secure document storage is not enabled.</p>
+      <div id="hostAccessNotice" class="notice hide">Log in or create a traveller account before applying to host. We’ll keep your private contact information out of the public listing.</div>
+      <form id="hostApplicationForm" class="hide">
+        <div class="panel"><h2>Your host profile</h2><div class="form-grid">
+          <div class="field"><label for="hostLegalName">Full legal name (private)</label><input id="hostLegalName" maxlength="100" required></div>
+          <div class="field"><label for="hostPhone">Phone for private verification contact</label><input id="hostPhone" type="tel" maxlength="30" required></div>
+          <div class="field"><label for="hostPublicName">Name shown to travellers</label><input id="hostPublicName" maxlength="60" required placeholder="First name or chosen display name"></div>
+          <div class="field"><label for="hostGender">Gender (optional matching preference)</label><select id="hostGender"><option value="prefer_not_to_say">Prefer not to say</option><option value="woman">Woman</option><option value="man">Man</option><option value="non-binary">Non-binary</option></select></div>
+          <div class="field"><label for="hostCity">City</label><input id="hostCity" maxlength="80" required></div>
+          <div class="field"><label for="hostArea">Neighbourhood / service area</label><input id="hostArea" maxlength="100" required></div>
+          <div class="field"><label for="hostLanguages">Languages (comma separated)</label><input id="hostLanguages" maxlength="300" required placeholder="Hindi, English, Marathi"></div>
+          <div class="field"><label for="hostAvailabilityFrom">Available from</label><input id="hostAvailabilityFrom" type="date" required></div>
+          <div class="field"><label for="hostAvailabilityTo">Available through</label><input id="hostAvailabilityTo" type="date" required></div>
+          <div class="field full"><label for="hostIntroduction">A short introduction</label><textarea id="hostIntroduction" maxlength="500" required placeholder="What would you love to share about your city?"></textarea></div>
+        </div></div>
+        <div class="panel"><h2>What would you like to offer?</h2><p class="fine-print">Choose one or more. Prices are in Indian rupees (₹).</p>
+          <div class="form-grid">
+            <section class="service-toggle"><label class="checkline"><input id="offerAccommodation" type="checkbox"><span><strong>Accommodation</strong><br>Welcome someone into your home.</span></label>
+              <div id="accommodationFields" class="hide">
+                <div class="field"><label for="accommodationPrice">Price per night (₹)</label><input id="accommodationPrice" type="number" min="1" step="1"></div>
+                <div class="field"><label for="propertyType">Property type</label><select id="propertyType"><option value="Private room in occupied home">Private room in occupied home</option><option value="Shared room in occupied home">Shared room in occupied home</option><option value="Entire home">Entire home</option></select></div>
+                <div class="field"><label for="capacity">Guest capacity</label><input id="capacity" type="number" min="1" max="20" value="2"></div>
+                <div class="field"><label for="amenities">Facilities / amenities</label><input id="amenities" maxlength="300" placeholder="Wi-Fi, breakfast, accessible entrance"></div>
+                <div class="field"><label for="houseRules">House rules</label><textarea id="houseRules" maxlength="500"></textarea></div>
+                <div class="field"><label for="propertyAddress">Exact property address (private)</label><textarea id="propertyAddress" maxlength="250" required></textarea></div>
+                <label class="checkline"><input id="hostLivesOnsite" type="checkbox" checked><span>I live at the property.</span></label>
+              </div>
+            </section>
+            <section class="service-toggle"><label class="checkline"><input id="offerFood" type="checkbox"><span><strong>Regional food</strong><br>Share dishes and food traditions from your region.</span></label>
+              <div id="foodFields" class="hide">
+                <div class="field"><label for="foodPrice">Price per meal (₹)</label><input id="foodPrice" type="number" min="1"></div>
+                <div class="field"><label for="foodMenu">Menu and regional specialities</label><textarea id="foodMenu" maxlength="500"></textarea></div>
+                <div class="field"><label for="dietaryOptions">Dietary options</label><input id="dietaryOptions" maxlength="250" placeholder="Vegetarian, vegan, no onion/garlic"></div>
+                <div class="field"><label for="allergens">Known allergens / cross-contact</label><input id="allergens" maxlength="250"></div>
+              </div>
+            </section>
+            <section class="service-toggle"><label class="checkline"><input id="offerExploration" type="checkbox"><span><strong>Local exploration</strong><br>Show people the places you know best.</span></label>
+              <div id="explorationFields" class="hide">
+                <div class="field"><label for="explorationPrice">Price per hour (₹)</label><input id="explorationPrice" type="number" min="1"></div>
+                <div class="field"><label for="experiences">Experiences, duration, and safety notes</label><textarea id="experiences" maxlength="500" placeholder="Heritage walk, 2 hours; comfortable walking shoes recommended"></textarea></div>
+              </div>
+            </section>
+          </div>
+          <div class="notice" style="margin-top:16px">Application review is not a safety guarantee. Administrators must complete and record identity, property, and interview checks before approving a listing. Private documents are not collected by this prototype.</div>
+          <label class="checkline" style="margin-top:15px"><input id="policyAccepted" type="checkbox" required><span>I agree to Meetaro’s host safety, privacy, conduct, and service-quality policies. I understand that my profile stays private until approved.</span></label>
+          <div class="modal-actions"><button class="primary" type="submit">Submit host application</button></div>
+        </div>
+      </form>
     </section>
-    <section id="tab-plans" class="hide">
-      <h1>Plans</h1>
-      <p id="mystatus" class="sub"></p>
-      <button id="cancelRenewal" class="ghost hide" type="button">Cancel auto-renewal</button>
-      <div class="banner">Choose a plan to continue to secure checkout. UPI, cards, and eligible wallets are available through Razorpay.</div>
-      <div class="plans">
-        <div class="plan"><h3>Chat Premium</h3><div class="price">₹99<small>/mo</small></div><ul><li>Unlimited messages</li></ul><button data-plan="chat">Get Chat</button></div>
-        <div class="plan"><h3>Video Premium</h3><div class="price">₹150<small>/mo</small></div><ul><li>Video calls with matches</li></ul><button data-plan="video">Get Video</button></div>
-        <div class="plan best"><h3>Combo</h3><div class="price">₹179<small>/mo</small></div><ul><li>Unlimited messages</li><li>Video calls</li><li>Save ₹70</li></ul><button data-plan="combo" style="background:var(--teal)">Get Combo</button></div>
-      </div>
+
+    <section class="page-wrap hide" id="tripsPage" data-page="trips">
+      <span class="eyebrow">Your travel plans</span><h1 class="page-title">My trips</h1><p class="page-subtitle">Host requests, confirmed details, and your upcoming stays in one place.</p><div id="travellerBookings" class="panel"></div>
     </section>
-  </main>
+
+    <section class="page-wrap hide" id="favoritesPage" data-page="favorites">
+      <span class="eyebrow">Keep the good ones close</span><h1 class="page-title">Saved hosts</h1><p class="page-subtitle">Your saved approved hosts, available whenever you’re ready to plan.</p><div id="favoriteGrid" class="listing-grid"></div>
+    </section>
+
+    <section class="page-wrap hide" id="hostDashboardPage" data-page="host-dashboard">
+      <span class="eyebrow">Your corner of Meetaro</span><h1 class="page-title">Host space</h1><p class="page-subtitle">Track your application and respond to requests from travellers.</p><div id="hostDashboardContent"></div>
+    </section>
+
+    <section class="page-wrap hide" id="adminPage" data-page="admin">
+      <span class="eyebrow">Restricted workspace</span><h1 class="page-title">Meetaro administration</h1><p class="page-subtitle">Private host applications and traveller reports. Only authorized administrator accounts can access these tools.</p><div id="adminContent"></div>
+    </section>
+
+    <section class="page-wrap hide" id="safetyPage" data-page="safety">
+      <span class="eyebrow">Travel thoughtfully</span><h1 class="page-title">Safety, privacy &amp; policies</h1>
+      <div class="panel"><h2>Host review</h2><p>Every host profile stays private until an administrator completes and records the required manual review. An approval label reflects the platform review process; it is not a guarantee of safety, identity, accommodation quality, or suitability.</p></div>
+      <div class="panel"><h2>Privacy by design</h2><p>Search results never include a host’s legal name, email, phone, or exact home address. A host sees only a traveller’s display name and information relevant to a booking request. For an accommodation booking, the exact arrival address is shared with the traveller only after confirmation.</p></div>
+      <div class="panel"><h2>Bookings and cancellations</h2><p>A request is not a confirmed booking. The host must accept first, and the traveller must confirm the final amount and availability. Contact the host through the platform to request a change or cancellation. Payment processing, taxes, refunds, and platform fees are not enabled in this prototype.</p></div>
+      <div class="panel"><h2>Food and accessibility</h2><p>Share dietary requirements before requesting a meal; hosts must confirm whether a request can be met. Always discuss severe allergies and cross-contact directly before relying on a meal listing. For an emergency, contact local emergency services; Meetaro is not an emergency-response service.</p></div>
+      <div class="panel"><h2>Contact Meetaro</h2><p>For questions or concerns, email <a href="mailto:meetaro@zohomail.in">meetaro@zohomail.in</a>. You may include a booking reference so we can understand the issue. Do not email passwords, payment-card details, or identity documents.</p></div>
+      <div class="panel"><h2>Data and prototype limitations</h2><p>Meetaro currently stores application data in a local JSON file for development. Use private, controlled storage for production identity documents; this app does not accept verification uploads, store payment card details, process payments, or provide an emergency response service.</p></div>
+    </section>
+  </div>
+</main>
+
+<footer><div class="shell footer-inner"><a class="brand" href="#" data-nav="home"><span class="brand-mark"><span>M</span></span>Meetaro</a><div class="footer-links"><button type="button" data-nav="safety">Safety &amp; privacy</button><button type="button" data-nav="host">Become a host</button><a href="mailto:meetaro@zohomail.in">Questions or concerns? meetaro@zohomail.in</a></div><div class="footer-meta"><span>A local travel marketplace in development</span><span>© <span id="copyrightYear">2026</span> Meetaro. All rights reserved.</span></div></div></footer>
+
+<div id="authModal" class="modal-backdrop hide" role="presentation">
+  <section class="modal auth-modal" role="dialog" aria-modal="true" aria-labelledby="authHeading">
+    <button class="modal-close" type="button" data-close="authModal" aria-label="Close">×</button>
+    <span class="eyebrow">Join the journey</span><h2 id="authHeading">Welcome to Meetaro.</h2><p class="fine-print" id="authIntro">Log in or create your traveller account. You can apply to host after you sign in.</p>
+    <form id="authForm"><div id="authSignupFields" class="hide">
+      <div class="field"><label for="authName">Your name</label><input id="authName" autocomplete="name" maxlength="40" required></div>
+      <div class="field"><label for="authAge">Age (18+)</label><input id="authAge" type="number" min="18" max="120" required></div>
+      <div class="field"><label for="authGender">Gender</label><select id="authGender"><option>Woman</option><option>Man</option><option>Other</option><option>Prefer not to say</option></select></div>
+    </div>
+      <div class="field"><label for="authEmail">Email</label><input id="authEmail" type="email" autocomplete="email" required></div>
+      <div class="field" id="authPasswordField"><label for="authPassword">Password</label><input id="authPassword" type="password" autocomplete="current-password" minlength="8" maxlength="128" required></div>
+      <div class="field hide" id="authOtpField"><label for="authOtp">Email verification code</label><input id="authOtp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" aria-describedby="authOtpHelp"><span class="fine-print" id="authOtpHelp">Enter the six-digit code sent to your email. It expires in 10 minutes.</span><button class="text-button" id="authResendOtp" type="button">Send a new code</button></div>
+      <p id="authError" class="fine-print" role="alert"></p><button class="primary" id="authSubmit" type="submit">Log in</button>
+    </form>
+    <p class="fine-print" id="authSwitchRow" style="margin:14px 0 0"><span id="authSwitchText">New to Meetaro?</span> <button class="text-button" id="authSwitch" type="button">Create an account</button></p>
+  </section>
 </div>
 
-<!-- VIDEO CALL SCREEN -->
-<div id="call" class="hide">
-  <video id="remote" autoplay playsinline></video>
-  <video id="local" autoplay playsinline muted></video>
-  <button id="endcall" style="background:#C62828">End call</button>
+<div id="bookingModal" class="modal-backdrop hide" role="presentation">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="bookingTitle">
+    <button class="modal-close" type="button" data-close="bookingModal" aria-label="Close">×</button>
+    <span class="eyebrow">A request, not a commitment</span><h2 id="bookingTitle">Plan a local stay</h2><div id="bookingSummary"></div>
+    <form id="bookingForm">
+      <div class="form-grid" style="margin-top:14px">
+        <div class="field"><label for="bookingArrival">Arrival</label><input id="bookingArrival" type="date" required></div>
+        <div class="field"><label for="bookingDeparture">Departure</label><input id="bookingDeparture" type="date" required></div>
+        <div class="field"><label for="bookingTravellers">Travellers</label><input id="bookingTravellers" type="number" min="1" max="12" value="2" required></div>
+        <div class="field"><label for="bookingGenderPreference">Preferred host gender</label><select id="bookingGenderPreference"><option value="none">No preference</option><option value="woman">Prefer a woman host</option><option value="man">Prefer a man host</option></select></div>
+        <div class="field full"><label>Choose host services</label><div id="bookingServices" class="service-chips"></div></div>
+        <div class="field"><label for="bookingMealCount">Meals per traveller</label><input id="bookingMealCount" type="number" min="1" max="90" value="2"></div>
+        <div class="field"><label for="bookingExplorationHours">Exploration hours</label><input id="bookingExplorationHours" type="number" min="1" max="24" value="2"></div>
+        <div class="field full"><label for="bookingFoodPreferences">Dietary needs / food requests</label><textarea id="bookingFoodPreferences" maxlength="300"></textarea></div>
+        <div class="field full"><label for="bookingIntroduction">Short note to the host (optional)</label><textarea id="bookingIntroduction" maxlength="300"></textarea></div>
+      </div>
+      <div id="bookingQuote" class="quote" style="margin-top:13px" aria-live="polite"></div>
+      <p class="fine-print" style="margin-top:10px">This estimate excludes taxes and payment fees, which are not configured. No payment is taken by Meetaro. The host must accept your request and you must confirm the final price before the booking is confirmed.</p>
+      <p id="bookingError" class="fine-print" role="alert"></p>
+      <div class="modal-actions"><button class="primary" type="submit">Send booking request</button><button class="secondary" type="button" data-close="bookingModal">Go back</button></div>
+    </form>
+  </section>
 </div>
-<div id="toast" class="hide"></div>
 
-<script src="/socket.io/socket.io.js"></script>
+<div id="toast" class="toast hide" role="status" aria-live="polite"></div>
 <script>
 const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let token = localStorage.getItem('token'), me = null, socket = null, current = null, signupMode = false;
+const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+let token = localStorage.getItem('token') || '';
+let me = null;
+let listings = [];
+let favoriteIds = new Set();
+let selectedHost = null;
+let authMode = 'login';
+let authOtpStage = false;
+let searchFilters = {};
+const serviceLabels = {accommodation:'Stay',food:'Regional food',exploration:'Local experience'};
+const serviceIcons = {accommodation:'🏡',food:'🍲',exploration:'🧭'};
+const allowedPages = ['home','host','trips','favorites','host-dashboard','admin','safety'];
 
-function toast(t){ const el=$('toast'); el.textContent=t; el.classList.remove('hide'); setTimeout(()=>el.classList.add('hide'),3500); }
-async function api(url, method='GET', body){
-  const r = await fetch(url,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:body?JSON.stringify(body):undefined});
-  const d = await r.json();
-  if(!r.ok){ if(r.status===401) logout(); throw new Error(d.error||'Something went wrong'); }
-  return d;
+function toast(message, isError = false) {
+  const box = $('toast');
+  box.textContent = message;
+  box.style.background = isError ? '#813f31' : '#202923';
+  box.classList.remove('hide');
+  window.clearTimeout(toast.timer);
+  toast.timer = window.setTimeout(() => box.classList.add('hide'), 4000);
 }
-
-// ---------- LOGIN / SIGN UP ----------
-$('authswitch').onclick = () => {
-  signupMode = !signupMode;
-  $('signupFields').classList.toggle('hide', !signupMode);
-  $('authbtn').textContent = signupMode ? 'Create account' : 'Log in';
-  $('authswitchtxt').textContent = signupMode ? 'Already have an account?' : 'New here?';
-  $('authswitch').textContent = signupMode ? 'Log in' : 'Create an account';
-};
-$('authbtn').onclick = async () => {
-  $('autherr').textContent = '';
-  const body = { email: $('email').value, password: $('password').value };
-  if (signupMode) Object.assign(body, {
-    name:$('name').value, age:$('age').value, gender:$('gender').value, bio:$('bio').value,
-    location:$('location').value, interests:$('interests').value.split(',').map((item) => item.trim()).filter(Boolean).slice(0, 12),
+async function api(url, method = 'GET', body) {
+  const response = await fetch(url, {
+    method,
+    headers: {
+      ...(body === undefined ? {} : {'Content-Type':'application/json'}),
+      ...(token ? {Authorization:'Bearer '+token} : {}),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
+  let data;
+  try { data = await response.json(); } catch { throw new Error('Meetaro returned an unexpected response. Please try again.'); }
+  if (!response.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+  return data;
+}
+function todayString() { return new Date().toISOString().slice(0,10); }
+function dateAfter(days) { const date=new Date(); date.setDate(date.getDate()+days); return date.toISOString().slice(0,10); }
+function dayAfter(value) { const date=new Date(`${value}T00:00:00.000Z`);date.setUTCDate(date.getUTCDate()+1);return date.toISOString().slice(0,10); }
+function setDefaultDates() {
+  for (const id of ['arrivalDate','bookingArrival']) $(id).min = todayString();
+  for (const id of ['departureDate','bookingDeparture']) $(id).min = dateAfter(1);
+  $('arrivalDate').value = dateAfter(7);
+  $('departureDate').value = dateAfter(9);
+  $('hostAvailabilityFrom').min = dateAfter(1);
+  $('hostAvailabilityTo').min = dateAfter(2);
+  $('hostAvailabilityFrom').value = dateAfter(14);
+  $('hostAvailabilityTo').value = dateAfter(90);
+}
+function setPage(name) {
+  const page = allowedPages.includes(name) ? name : 'home';
+  document.querySelectorAll('[data-page]').forEach((section) => section.classList.toggle('hide', section.dataset.page !== page));
+  document.querySelectorAll('[data-nav]').forEach((button) => button.classList.toggle('active', button.dataset.nav === page));
+  $('nav').classList.remove('open');
+  $('menuButton').setAttribute('aria-expanded','false');
+  if (page === 'trips') loadTravellerBookings();
+  if (page === 'favorites') loadFavorites();
+  if (page === 'host-dashboard') loadHostDashboard();
+  if (page === 'admin') loadAdminDashboard();
+  if (page === 'host') renderHostAccess();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderAccount() {
+  const signedIn = Boolean(me && token);
+  $('loginNav').classList.toggle('hide',signedIn);
+  $('logoutNav').classList.toggle('hide',!signedIn);
+  $('userGreeting').classList.toggle('hide',!signedIn);
+  $('tripsNav').classList.toggle('hide',!signedIn);
+  $('favoritesNav').classList.toggle('hide',!signedIn || me.role!=='traveller');
+  $('hostDashboardNav').classList.toggle('hide',!signedIn || !['host','host_applicant'].includes(me.role));
+  $('adminNav').classList.toggle('hide',!signedIn || me.role !== 'admin');
+  $('userGreeting').textContent = signedIn ? `Hello, ${me.name.split(/\s+/)[0]}` : '';
+  renderHostAccess();
+}
+function openModal(id) {
+  $(id).classList.remove('hide');
+  const focusable = $(id).querySelector('input:not([type=hidden]),button,select,textarea');
+  if (focusable) focusable.focus();
+}
+function closeModal(id) {
+  $(id).classList.add('hide');
+}
+async function loadListings(filters = searchFilters) {
+  searchFilters = {...filters};
+  const params = new URLSearchParams();
+  Object.entries(searchFilters).forEach(([key,value]) => {if(value !== '' && value !== undefined && value !== null) params.set(key,String(value));});
   try {
-    const r = await fetch(signupMode?'/api/signup':'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    const d = await r.json();
-    if(!r.ok) throw new Error(d.error);
-    token = d.token; localStorage.setItem('token', token); start();
-  } catch(e){ $('autherr').textContent = e.message; }
-};
-function logout(){ localStorage.removeItem('token'); location.reload(); }
-$('logout').onclick = logout;
-
-// ---------- START APP ----------
-async function start(){
-  try { me = await api('/api/me'); } catch { return; }
-  $('auth').classList.add('hide'); $('app').classList.remove('hide');
-  socket = io({ auth: { token } });
-  socket.on('message', onMessage);
-  socket.on('notification', onNotification);
-  socket.on('read', () => { if (!$('tab-matches').classList.contains('hide')) loadMatches(); });
-  socket.on('receipt', onReceipt);
-  socket.on('call', onCall);
-  socket.on('connect_error', () => toast('Live connection could not be established. Refresh and sign in again.'));
-  renderProfileSettings();
-  const initialTab = new URLSearchParams(location.search).get('tab');
-  showTab(['discover','matches','plans'].includes(initialTab) ? initialTab : 'discover');
-  refreshUnread();
-}
-async function refreshUnread(){
-  try {
-    const matches = await api('/api/matches');
-    updateNotificationCount(matches.reduce((sum, match) => sum + match.unread, 0));
-    if (!$('tab-matches').classList.contains('hide')) renderMatches(matches);
-  } catch(e){ toast(e.message); }
-}
-function updateNotificationCount(count){
-  const badge = $('notificationCount');
-  badge.textContent = count > 99 ? '99+' : String(count);
-  badge.classList.toggle('hide', count === 0);
-  const label = count ? `Notifications, ${count} unread messages` : 'Notifications';
-  $('notifications').setAttribute('aria-label', label);
-  $('notifications').title = label;
-}
-async function markRead(matchId){
-  try { await api('/api/messages/'+encodeURIComponent(matchId)+'/read','POST'); await refreshUnread(); }
-  catch(e){ toast(e.message); }
-}
-function renderProfileSettings(){
-  const box = $('profileSettings');
-  box.innerHTML = `<h3>Make it more you</h3><p>Add your city and interests to bring people with more in common into your discovery mix. Sharing is optional.</p>
-    <div class="pref-row"><input id="prefLocation" maxlength="80" aria-label="Your city or area" placeholder="City or area">
-    <input id="prefInterests" maxlength="400" aria-label="Your interests" placeholder="Interests, separated by commas"></div>
-    <button id="savePreferences">Save preferences</button><span id="preferenceStatus" class="sub"></span>`;
-  $('prefLocation').value = me.location || '';
-  $('prefInterests').value = (me.interests || []).join(', ');
-  $('savePreferences').onclick = async () => {
-    const interests = $('prefInterests').value.split(',').map((item) => item.trim()).filter(Boolean).slice(0, 12);
-    try {
-      const updated = await api('/api/profile','PUT',{location:$('prefLocation').value,interests});
-      Object.assign(me, updated);
-      $('preferenceStatus').textContent = 'Saved';
-      await loadDiscover();
-    } catch(e){ toast(e.message); }
-  };
-}
-document.querySelectorAll('nav [data-tab]').forEach(b => b.onclick = () => showTab(b.dataset.tab));
-$('notifications').onclick = async () => {
-  if ('Notification' in window && Notification.permission === 'default') {
-    try { await Notification.requestPermission(); } catch {}
+    listings = await api('/api/travel/listings'+(params.size ? '?'+params.toString() : ''));
+    renderListings();
+  } catch(error) {
+    $('listingGrid').innerHTML = `<div class="empty-state"><strong>We couldn't load local hosts.</strong>${esc(error.message)}</div>`;
   }
-  showTab('matches');
-  await refreshUnread();
-  if (!$('notificationCount').classList.contains('hide')) {
-    const firstUnread = document.querySelector('#matchlist .unread');
-    if (firstUnread) firstUnread.closest('.item').click();
-  } else toast('You are all caught up.');
-};
-function showTab(t){
-  document.querySelectorAll('nav [data-tab]').forEach(b => b.classList.toggle('active', b.dataset.tab===t));
-  ['discover','matches','plans'].forEach(x => $('tab-'+x).classList.toggle('hide', x!==t));
-  if(t==='discover') loadDiscover();
-  if(t==='matches') loadMatches();
-  if(t==='plans') renderPlans();
 }
-
-// ---------- DISCOVER ----------
-let queue = [];
-async function loadDiscover(){ queue = await api('/api/discover'); showCard(); }
-function visibleQueue(){
-  const query = $('peopleSearch').value.trim().toLocaleLowerCase();
-  return query ? queue.filter((person) => person.name.toLocaleLowerCase().includes(query)) : queue;
+function listingPrice(listing) {
+  const prices = Object.entries(listing.services).map(([name,details]) => ({
+    name,
+    price:name === 'accommodation' ? details.pricePerNight : name === 'food' ? details.pricePerMeal : details.pricePerHour,
+    unit:name === 'accommodation' ? 'night' : name === 'food' ? 'meal' : 'hour',
+  }));
+  return prices.sort((a,b) => a.price-b.price)[0];
 }
-function clearPeopleSearch(){
-  $('peopleSearch').value = '';
-  showCard();
-  $('peopleSearch').focus();
-}
-$('peopleSearch').addEventListener('input', showCard);
-function showCard(){
-  const box = $('discoverCard'), query = $('peopleSearch').value.trim(), results = visibleQueue(), p = results[0];
-  const status = $('searchStatus');
-  status.classList.toggle('hide', !query || !results.length);
-  status.textContent = query && results.length ? `${results.length} ${results.length === 1 ? 'person' : 'people'} found` : '';
-  if(!p){
-    box.innerHTML = query
-      ? `<div class="search-empty"><strong>No people found for “${esc(query)}”</strong>Try another name, or clear your search to see everyone.</div><div class="row"><button class="ghost" id="clearPeopleSearch" type="button">Clear search</button></div>`
-      : '<div class="empty">You’re all caught up for now.<br>Check back soon to meet someone new.</div>';
-    const clearButton = $('clearPeopleSearch');
-    if(clearButton) clearButton.onclick = clearPeopleSearch;
+function renderListings() {
+  const sort = $('sortFilter').value;
+  const maxBudget = Number($('resultsBudget').value || 0);
+  let items = listings.slice();
+  if (maxBudget > 0) items = items.filter((listing) => Object.values(listing.services).some((service) => [service.pricePerNight,service.pricePerMeal,service.pricePerHour].some((price) => Number(price) > 0 && Number(price) <= maxBudget)));
+  if (sort === 'price') items.sort((a,b) => listingPrice(a).price-listingPrice(b).price);
+  if (sort === 'rating') items.sort((a,b) => (b.rating || 0)-(a.rating || 0));
+  $('resultsHeadingCount').textContent = items.length ? `${items.length} ${items.length === 1 ? 'local host' : 'local hosts'}` : 'Local hosts';
+  if (!items.length) {
+    const city = searchFilters.city || 'this destination';
+    $('listingGrid').innerHTML = `<div class="empty-state"><strong>No approved hosts found in ${esc(city)} just yet.</strong>Try another city or service, or check back as new local hosts are reviewed.</div>`;
     return;
   }
-  const interests = (p.interests || []).map((item) => `<span class="rec">${esc(item)}</span>`).join('');
-  const hue = Array.from(p.name).reduce((total, character) => total + character.charCodeAt(0), 0) % 360;
-  box.innerHTML = `<article class="swipe-card" style="--profile-hue:${hue}" aria-label="Profile: ${esc(p.name)}, ${p.age}">
-    <span class="portrait-label">A little about them</span>
-    <div class="portrait-orbit" aria-hidden="true"><span class="portrait-initial">${esc(p.name[0].toUpperCase())}</span></div>
-    <div class="swipe-details">
-      <div class="swipe-title"><h2>${esc(p.name)}</h2><span class="age">${p.age}</span></div>
-      <p class="swipe-location">${esc(p.location || 'Location not shared')}</p>
-      ${p.bio ? `<p class="swipe-bio">${esc(p.bio)}</p>` : ''}
-      ${interests ? `<div class="swipe-tags">${interests}</div>` : ''}
-      ${p.recommendation ? `<span class="swipe-recommendation">${esc(p.recommendation)}</span>` : ''}
-    </div>
-  </article>
-  <div class="swipe-actions">
-    <button class="pass-action" id="pass" type="button" aria-label="Pass on ${esc(p.name)}" title="Pass">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
-    </button>
-    <button id="like" type="button" aria-label="Like ${esc(p.name)}" title="Like">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></svg>
-    </button>
-  </div>
-  <p class="gesture-hint">Swipe right to like · left to pass</p>`;
-  $('pass').onclick = () => swipe(false); $('like').onclick = () => swipe(true);
-  bindSwipeGestures(box.querySelector('.swipe-card'));
+  renderHostCards($('listingGrid'),items);
 }
-function bindSwipeGestures(card){
-  let startX = 0, startY = 0, offsetX = 0, activePointer = null;
-  card.addEventListener('pointerdown', (event) => {
-    if (event.target.closest('button')) return;
-    activePointer = event.pointerId;
-    startX = event.clientX;
-    startY = event.clientY;
-    offsetX = 0;
-    card.setPointerCapture(event.pointerId);
-  });
-  card.addEventListener('pointermove', (event) => {
-    if (event.pointerId !== activePointer) return;
-    offsetX = event.clientX - startX;
-    const offsetY = event.clientY - startY;
-    if (Math.abs(offsetX) < Math.abs(offsetY)) return;
-    card.style.transform = `translateX(${offsetX}px) rotate(${offsetX / 24}deg)`;
-    card.dataset.drag = offsetX > 18 ? 'like' : offsetX < -18 ? 'pass' : '';
-  });
-  const finish = (event) => {
-    if (event.pointerId !== activePointer) return;
-    activePointer = null;
-    if (Math.abs(offsetX) > 95) {
-      const like = offsetX > 0;
-      card.style.transition = 'transform .2s ease, opacity .2s ease';
-      card.style.transform = `translateX(${like ? 120 : -120}vw) rotate(${like ? 18 : -18}deg)`;
-      card.style.opacity = '0';
-      window.setTimeout(() => swipe(like), 170);
+function renderHostCards(container,items) {
+  container.innerHTML = items.map((listing,index) => {
+    const price = listingPrice(listing);
+    const chips = Object.keys(listing.services).map((name) => `<span class="chip">${esc(serviceLabels[name])}</span>`).join('');
+    const ratings = listing.rating ? `★ ${Number(listing.rating).toFixed(1)} · ${listing.reviewCount} ${listing.reviewCount === 1 ? 'review':'reviews'}` : 'New host';
+    const colors = [['#d7dfc4','#97ad91'],['#eed9bf','#c28b63'],['#c9ded5','#78a28d'],['#e3d1bb','#b99772']][index%4];
+    const description = `${listing.host.introduction} ${listing.services.accommodation ? `${listing.services.accommodation.propertyType}. ` : ''}${listing.services.food ? `${listing.services.food.menu} ` : ''}${listing.services.exploration ? `${listing.services.exploration.experiences}` : ''}`;
+    return `<article class="listing-card">
+      <div class="listing-art" style="--d1:${colors[0]};--d2:${colors[1]}"><span class="listing-icon" aria-hidden="true">${serviceIcons[Object.keys(listing.services)[0]]}</span><span class="listing-type">Host profile approved</span><span class="rating">${esc(ratings)}</span></div>
+      <div class="listing-body"><div class="listing-loc">${esc(listing.host.city)} · ${esc(listing.host.area)}</div><h3>${esc(listing.host.name)} welcomes you</h3><p>${esc(description)}</p><div class="fine-print">Available ${esc(listing.availability.from)} – ${esc(listing.availability.to)}</div><div class="service-chips" style="margin-top:9px">${chips}</div>
+        <div class="listing-bottom"><span class="listing-price">From <strong>₹${price.price}</strong> / ${esc(price.unit)}</span><div><button class="secondary" type="button" data-favorite-host="${esc(listing.id)}" aria-label="${favoriteIds.has(listing.id)?'Remove':'Save'} ${esc(listing.host.name)} ${favoriteIds.has(listing.id)?'from':'to'} saved hosts">${favoriteIds.has(listing.id)?'♥ Saved':'♡ Save'}</button> <button class="primary" type="button" data-book-host="${esc(listing.id)}">View &amp; request</button></div></div></div>
+    </article>`;
+  }).join('');
+  container.querySelectorAll('[data-book-host]').forEach((button) => button.addEventListener('click', () => openBooking(button.dataset.bookHost)));
+  container.querySelectorAll('[data-favorite-host]').forEach((button) => button.addEventListener('click', () => toggleFavorite(button.dataset.favoriteHost)));
+}
+async function loadFavorites() {
+  if(!me||me.role!=='traveller')return;
+  try {
+    const items=await api('/api/travel/favorites');
+    favoriteIds=new Set(items.map((item)=>item.id));
+    $('favoriteGrid').innerHTML=items.length?'':'<div class="empty-state"><strong>No saved hosts yet.</strong>Browse local listings and save the hosts you want to come back to.</div>';
+    if(items.length)renderHostCards($('favoriteGrid'),items);
+  }catch(error){$('favoriteGrid').innerHTML=`<div class="empty-state">${esc(error.message)}</div>`;}
+}
+async function toggleFavorite(id) {
+  if(!me||!token){openAuth('login');toast('Log in to save a host.');return;}
+  try {
+    const result=await api(`/api/travel/favorites/${encodeURIComponent(id)}`,'PUT',{});
+    if(result.saved)favoriteIds.add(id);else favoriteIds.delete(id);
+    renderListings();
+    if(document.querySelector('[data-page="favorites"]:not(.hide)'))await loadFavorites();
+    toast(result.saved?'Host saved to your list.':'Host removed from your saved list.');
+  }catch(error){toast(error.message,true);}
+}
+function runSearch() {
+  const query = {
+    city:$('searchCity').value.trim(),
+    service:$('serviceFilter').value,
+    hostGender:$('genderFilter').value,
+    maxBudget:$('searchBudget').value,
+    arrivalDate:$('arrivalDate').value,
+    departureDate:$('departureDate').value,
+    travellers:$('travellerCount').value,
+    q:$('interestFilter').value.trim(),
+  };
+  loadListings(query);
+  $('resultsSection').scrollIntoView({behavior:'smooth'});
+}
+function openAuth(mode = 'login') {
+  authMode = mode;
+  authOtpStage = false;
+  $('authError').textContent = '';
+  $('authOtp').value = '';
+  $('authHeading').textContent = mode === 'signup' ? 'Find your way in.' : 'Welcome back.';
+  $('authIntro').textContent = mode === 'signup' ? 'Create your traveller account. You can apply to host after you sign in.' : 'Log in with your Meetaro account.';
+  $('authSignupFields').classList.toggle('hide',mode !== 'signup');
+  $('authPasswordField').classList.remove('hide');
+  $('authOtpField').classList.add('hide');
+  $('authSwitchRow').classList.remove('hide');
+  $('authEmail').readOnly = false;
+  $('authPassword').required = true;
+  $('authOtp').required = false;
+  $('authName').required = mode === 'signup';
+  $('authAge').required = mode === 'signup';
+  $('authSubmit').textContent = mode === 'signup' ? 'Create account' : 'Log in';
+  $('authSwitchText').textContent = mode === 'signup' ? 'Already registered?' : 'New to Meetaro?';
+  $('authSwitch').textContent = mode === 'signup' ? 'Log in' : 'Create an account';
+  openModal('authModal');
+}
+function renderHostAccess() {
+  const signedIn = Boolean(me && token);
+  $('hostAccessNotice').classList.toggle('hide',signedIn);
+  $('hostApplicationForm').classList.toggle('hide',!signedIn || !['traveller'].includes(me.role));
+  if (signedIn && ['host','host_applicant'].includes(me.role)) {
+    $('hostAccessNotice').classList.remove('hide');
+    $('hostAccessNotice').textContent = 'You already have a host application. Open Host space to view its review status and booking requests.';
+  } else if (signedIn && me.role === 'admin') {
+    $('hostAccessNotice').classList.remove('hide');
+    $('hostAccessNotice').textContent = 'Administrator accounts cannot apply as hosts.';
+  }
+}
+function toggleServiceFields() {
+  for (const [checkbox,fields] of [['offerAccommodation','accommodationFields'],['offerFood','foodFields'],['offerExploration','explorationFields']]) {
+    $(fields).classList.toggle('hide',!$(checkbox).checked);
+  }
+  $('accommodationPrice').required=$('offerAccommodation').checked;
+  $('propertyAddress').required=$('offerAccommodation').checked;
+  $('foodPrice').required=$('offerFood').checked;
+  $('foodMenu').required=$('offerFood').checked;
+  $('explorationPrice').required=$('offerExploration').checked;
+  $('experiences').required=$('offerExploration').checked;
+}
+function renderBookingServiceOptions() {
+  const services = selectedHost.services;
+  $('bookingServices').innerHTML = Object.entries(services).map(([name,details]) => {
+    const rate=name==='accommodation'?details.pricePerNight:name==='food'?details.pricePerMeal:details.pricePerHour;
+    const unit=name==='accommodation'?'night':name==='food'?'meal':'hour';
+    return `<label class="chip"><input type="checkbox" value="${esc(name)}" checked style="width:auto;margin:0 4px 0 0;accent-color:#235c45"> ${esc(serviceLabels[name])} · ₹${Number(rate)}/${unit}</label>`;
+  }).join('');
+  $('bookingServices').querySelectorAll('input').forEach((input) => input.addEventListener('change',updateQuote));
+}
+function selectedServiceKeys() {
+  return [...$('bookingServices').querySelectorAll('input:checked')].map((input)=>input.value);
+}
+function calculateQuote() {
+  const services=selectedServiceKeys(), nights=Math.max(0,(Date.parse($('bookingDeparture').value+'T00:00:00Z')-Date.parse($('bookingArrival').value+'T00:00:00Z'))/86400000);
+  const guests=Number($('bookingTravellers').value)||0;
+  const meals=Number($('bookingMealCount').value)||0;
+  const hours=Number($('bookingExplorationHours').value)||0;
+  const details=selectedHost.services;
+  const accommodation=services.includes('accommodation')?details.accommodation.pricePerNight*nights:0;
+  const food=services.includes('food')?details.food.pricePerMeal*meals*guests:0;
+  const exploration=services.includes('exploration')?details.exploration.pricePerHour*hours:0;
+  return {accommodation,food,exploration,total:accommodation+food+exploration,nights,guests,meals,hours};
+}
+function updateQuote() {
+  if(!selectedHost)return;
+  const quote=calculateQuote();
+  $('bookingQuote').innerHTML=`<span>Accommodation (${quote.nights} nights)</span><span>₹${quote.accommodation}</span><span>Food (${quote.meals} meals × ${quote.guests} guests)</span><span>₹${quote.food}</span><span>Exploration (${quote.hours} hours)</span><span>₹${quote.exploration}</span><strong>Estimated total</strong><strong>₹${quote.total}</strong>`;
+}
+function openBooking(id) {
+  selectedHost=listings.find((listing)=>listing.id===id);
+  if(!selectedHost)return;
+  if(!token){openAuth('login');toast('Log in to send a request.');return;}
+  if(me.role!=='traveller'){toast('Booking requests are available to traveller accounts.',true);return;}
+  $('bookingTitle').textContent=`Plan a visit with ${selectedHost.host.name}`;
+  $('bookingSummary').innerHTML=`<p class="fine-print">${esc(selectedHost.host.city)} · ${esc(selectedHost.host.area)}<br>${esc(selectedHost.host.introduction)}</p><div class="notice">Your contact details and email are not shared with the host. The booking is not confirmed until the host accepts and you confirm.</div>`;
+  $('bookingArrival').value=$('arrivalDate').value||dateAfter(7);
+  $('bookingDeparture').value=$('departureDate').value||dateAfter(9);
+  $('bookingTravellers').value=$('travellerCount').value||2;
+  $('bookingMealCount').value='2';
+  $('bookingExplorationHours').value='2';
+  $('bookingFoodPreferences').value='';
+  $('bookingIntroduction').value='';
+  $('bookingError').textContent='';
+  renderBookingServiceOptions();
+  for(const id of ['bookingArrival','bookingDeparture','bookingTravellers','bookingMealCount','bookingExplorationHours']) $(id).oninput=updateQuote;
+  updateQuote();
+  openModal('bookingModal');
+}
+function bookingCard(booking, isHost = false) {
+  const actions=[];
+  if(isHost && booking.status==='pending'){
+    actions.push(`<button class="primary" data-host-action="accept" data-booking-id="${esc(booking.id)}">Accept request</button><button class="secondary" data-host-action="decline" data-booking-id="${esc(booking.id)}">Decline</button>`);
+  }
+  if(!isHost && booking.status==='awaiting_traveller_confirmation'){
+    actions.push(`<button class="primary" data-traveller-confirm="${esc(booking.id)}">Confirm booking · ₹${Number(booking.proposedTotal)}</button>`);
+  }
+  if(isHost && booking.status==='confirmed')actions.push(`<button class="primary" data-complete-booking="${esc(booking.id)}">Mark completed</button>`);
+  if(['pending','awaiting_traveller_confirmation','confirmed'].includes(booking.status))actions.push(`<button class="secondary" data-cancel-booking="${esc(booking.id)}">Cancel request</button>`);
+  if(!isHost && booking.status==='completed')actions.push(`<button class="secondary" data-review-booking="${esc(booking.id)}">Leave a review</button>`);
+  actions.push(`<button class="text-button" data-report-booking="${esc(booking.id)}">Report a concern</button>`);
+  const serviceNames=(booking.services||[]).map((key)=>serviceLabels[key]||key).join(', ');
+  const person=isHost?`Request from ${booking.traveller?.name||'traveller'}`:`${booking.host?.name||'Local host'} · ${booking.host?.city||''}`;
+  const finalAddress=!isHost&&booking.status==='confirmed'&&booking.host?.arrivalAddress?`<div class="notice" style="margin-top:10px"><strong>Arrival address (shared after confirmation):</strong><br>${esc(booking.host.arrivalAddress)}</div>`:'';
+  return `<article class="record" data-record-booking="${esc(booking.id)}"><div class="record-header"><div><h3>${esc(person)}</h3><p>${esc(booking.arrivalDate)} → ${esc(booking.departureDate)} · ${booking.nights} nights · ${booking.travellers} travellers</p><p>${esc(serviceNames)} · ${booking.estimate?.total!==undefined?'Estimate ₹'+Number(booking.estimate.total):''}</p>${booking.foodPreferences?`<p>Food requests: ${esc(booking.foodPreferences)}</p>`:''}${booking.introduction?`<p>Note: ${esc(booking.introduction)}</p>`:''}${booking.proposedTotal!==undefined&&booking.proposedTotal!==booking.estimate?.total?`<p><strong>Host proposal: ₹${Number(booking.proposedTotal)}</strong></p>`:''}</div><span class="status-pill ${['pending','awaiting_traveller_confirmation'].includes(booking.status)?'pending':''}">${esc(booking.status.replaceAll('_',' '))}</span></div>${finalAddress}${actions.length?`<div class="record-actions">${actions.join('')}</div>`:''}</article>`;
+}
+async function loadTravellerBookings() {
+  if(!me||me.role==='admin'){$('travellerBookings').innerHTML='<p class="fine-print">Traveller booking history is available to traveller accounts.</p>';return;}
+  try {
+    const bookings=await api('/api/travel/bookings');
+    $('travellerBookings').innerHTML=bookings.length?bookings.map((booking)=>bookingCard(booking)).join(''):'<div class="empty-state"><strong>Your next trip starts with a search.</strong>You haven’t requested a local stay yet.</div>';
+  }catch(error){$('travellerBookings').innerHTML=`<p class="fine-print">${esc(error.message)}</p>`;}
+}
+async function loadHostDashboard() {
+  if(!me||!['host','host_applicant'].includes(me.role)){$('hostDashboardContent').innerHTML='<div class="notice">Sign in and submit a host application to open Host space.</div>';return;}
+  try {
+    const data=await api('/api/travel/host/dashboard'),application=data.application;
+    const serviceNames=Object.keys(application.services||{}).map((name)=>serviceLabels[name]).join(', ');
+    $('hostDashboardContent').innerHTML=`<div class="panel"><div class="record-header"><div><h2>${esc(application.publicName)} · ${esc(application.city)}</h2><p class="fine-print">${esc(application.area)} · ${esc(serviceNames)}</p></div><span class="status-pill ${application.status==='submitted'||application.status==='under_review'?'pending':''}">${esc(application.status.replaceAll('_',' '))}</span></div><p>Your application becomes public only after review and approval. “Approved” records platform review, not a guarantee of safety.</p><details><summary>View your private contact details and review record</summary><p class="fine-print">Legal name: ${esc(application.privateContact.legalName)} · ${esc(application.privateContact.email)} · ${esc(application.privateContact.phone)}</p><p class="fine-print">Identity: ${esc(application.verification.identity)} · Property: ${esc(application.verification.property)} · Interview: ${esc(application.verification.interview)}</p></details></div><div class="panel"><h2>Booking requests</h2>${data.bookings.length?data.bookings.map((booking)=>bookingCard(booking,true)).join(''):'<p class="fine-print">No booking requests yet.</p>'}</div>`;
+  }catch(error){$('hostDashboardContent').innerHTML=`<div class="notice">${esc(error.message)}</div>`;}
+}
+async function loadAdminDashboard() {
+  if(!me||me.role!=='admin'){$('adminContent').innerHTML='<div class="notice">This area is restricted to Meetaro administrator accounts.</div>';return;}
+  try {
+    const [overview,applications,bookings,reports,audit]=await Promise.all([
+      api('/api/admin/overview'),api('/api/admin/applications'),api('/api/admin/bookings'),api('/api/admin/reports'),api('/api/admin/audit'),
+    ]);
+    $('adminContent').innerHTML=`<div class="metrics">${[['Travellers',overview.travellers],['Applications',overview.hostApplications],['Approved hosts',overview.approvedHosts],['Active bookings',overview.activeBookings]].map(([label,value])=>`<div class="metric"><strong>${Number(value)}</strong><span>${label}</span></div>`).join('')}</div>
+      <div class="panel"><h2>Host applications</h2>${applications.length?applications.map((application)=>`<article class="record"><div class="record-header"><div><h3>${esc(application.legalName)} <span class="fine-print">(${esc(application.publicName)})</span></h3><p>${esc(application.city)} · ${esc(application.area)} · ${esc(application.phone)} · ${esc(application.privateEmail)}</p><p>${esc(application.introduction)}</p><p>Services: ${esc(Object.keys(application.services).join(', '))} · ${esc(application.availabilityFrom)} to ${esc(application.availabilityTo)}</p><details><summary>Private verification information</summary><p>Identity: ${esc(application.verification.identity)} · Property: ${esc(application.verification.property)} · Interview: ${esc(application.verification.interview)}</p><p>${esc(application.verification.notes||'No reviewer notes.')}</p><p class="fine-print">Private address: ${esc(application.services.accommodation?.propertyAddress||'Not collected')} · legal name/contact are shown only in this admin view.</p></details></div><span class="status-pill ${['submitted','under_review','verification_pending'].includes(application.status)?'pending':''}">${esc(application.status.replaceAll('_',' '))}</span></div>
+          <div class="form-grid" style="margin-top:13px"><div class="field"><label for="reviewStatus-${esc(application.id)}">Application decision</label><select id="reviewStatus-${esc(application.id)}"><option value="under_review">Under review</option><option value="contact_required">Contact required</option><option value="interview_scheduled">Interview scheduled</option><option value="verification_pending">Verification pending</option><option value="approved">Approve after all checks pass</option><option value="rejected">Reject</option><option value="suspended">Suspend</option></select></div><div class="field"><label for="reviewNotes-${esc(application.id)}">Private review notes / decision reason</label><input id="reviewNotes-${esc(application.id)}" maxlength="1000"></div>
+            <label class="checkline"><input type="checkbox" id="identityCheck-${esc(application.id)}"><span>Identity check passed</span></label><label class="checkline"><input type="checkbox" id="propertyCheck-${esc(application.id)}"><span>Property check passed</span></label><label class="checkline"><input type="checkbox" id="interviewCheck-${esc(application.id)}"><span>Interview completed</span></label></div>
+          <div class="record-actions"><button class="primary" data-save-review="${esc(application.id)}">Save review</button></div></article>`).join(''):'<p class="fine-print">No applications have been submitted.</p>'}</div>
+      <div class="panel"><h2>Bookings</h2>${bookings.length?bookings.map((booking)=>`<div class="record"><h3>${esc(booking.id)} · ${esc(booking.status)}</h3><p>${esc(booking.arrivalDate)} → ${esc(booking.departureDate)} · ₹${Number(booking.proposedTotal)}</p></div>`).join(''):'<p class="fine-print">No bookings yet.</p>'}</div>
+      <div class="panel"><h2>Open reports</h2>${reports.filter((report)=>report.status==='open').length?reports.filter((report)=>report.status==='open').map((report)=>`<article class="record"><h3>Report ${esc(report.id)}</h3><p>${esc(report.reason)}</p><label class="field-label" for="reportNotes-${esc(report.id)}">Resolution notes</label><input id="reportNotes-${esc(report.id)}" class="input" maxlength="1000"><button class="secondary" style="margin-top:8px" data-resolve-report="${esc(report.id)}">Resolve report</button></article>`).join(''):'<p class="fine-print">No open reports.</p>'}</div>
+      <div class="panel"><h2>Recent audit history</h2>${audit.slice(0,20).map((item)=>`<div class="record"><p>${esc(item.action)} · ${esc(item.targetId)} · ${new Date(item.at).toLocaleString()}</p></div>`).join('')||'<p class="fine-print">No audit events recorded.</p>'}</div>`;
+    document.querySelectorAll('[data-save-review]').forEach((button)=>button.addEventListener('click',()=>saveApplicationReview(button.dataset.saveReview)));
+    document.querySelectorAll('[data-resolve-report]').forEach((button)=>button.addEventListener('click',()=>resolveReport(button.dataset.resolveReport)));
+  }catch(error){$('adminContent').innerHTML=`<div class="notice">${esc(error.message)}</div>`;}
+}
+async function saveApplicationReview(id) {
+  const status=$(`reviewStatus-${id}`).value;
+  const body={
+    status,
+    notes:$(`reviewNotes-${id}`).value,
+    verification:{
+      identity:$(`identityCheck-${id}`).checked?'passed':'not_reviewed',
+      property:$(`propertyCheck-${id}`).checked?'passed':'not_reviewed',
+      interview:$(`interviewCheck-${id}`).checked?'completed':'not_scheduled',
+    },
+  };
+  try{await api(`/api/admin/applications/${encodeURIComponent(id)}/review`,'POST',body);toast('Application review saved.');await loadAdminDashboard();}
+  catch(error){toast(error.message,true);}
+}
+async function resolveReport(id) {
+  const notes=$(`reportNotes-${id}`).value.trim();
+  try{await api(`/api/admin/reports/${encodeURIComponent(id)}/resolve`,'POST',{notes});toast('Report resolution saved.');await loadAdminDashboard();}
+  catch(error){toast(error.message,true);}
+}
+async function handleRecordAction(event) {
+  const target=event.target.closest('button');
+  if(!target)return;
+  const id=target.dataset.bookingId||target.dataset.travellerConfirm||target.dataset.cancelBooking||target.dataset.completeBooking||target.dataset.reviewBooking||target.dataset.reportBooking;
+  if(!id)return;
+  try {
+    if(target.dataset.hostAction){
+      const decision=target.dataset.hostAction;
+      let proposedTotal;
+      if(decision==='accept'){
+        const current=await api('/api/travel/host/dashboard');
+        const booking=current.bookings.find((item)=>item.id===id);
+        const entered=window.prompt('Confirm or edit the proposed total in ₹:',String(booking?.estimate?.total||0));
+        if(entered===null)return;
+        proposedTotal=Number(entered);
+      }
+      await api(`/api/travel/bookings/${encodeURIComponent(id)}/host-response`,'POST',{decision,...(proposedTotal===undefined?{}:{proposedTotal})});
+      toast(decision==='accept'?'Request accepted. The traveller must confirm the final price.':'Request declined.');
+    }else if(target.dataset.travellerConfirm){
+      if(!window.confirm('Confirm this booking at the host’s proposed total? Payment is not enabled yet.'))return;
+      await api(`/api/travel/bookings/${encodeURIComponent(id)}/confirm`,'POST',{});
+      toast('Booking confirmed. Arrival details are now available in My trips.');
+    }else if(target.dataset.cancelBooking){
+      if(!window.confirm('Cancel this booking request?'))return;
+      await api(`/api/travel/bookings/${encodeURIComponent(id)}/cancel`,'POST',{});
+      toast('Booking cancelled.');
+    }else if(target.dataset.completeBooking){
+      if(!window.confirm('Mark this confirmed booking as completed?'))return;
+      await api(`/api/travel/bookings/${encodeURIComponent(id)}/complete`,'POST',{});
+      toast('Booking marked complete.');
+    }else if(target.dataset.reviewBooking){
+      const rating=Number(window.prompt('Rate your completed experience from 1 to 5:','5'));
+      if(!Number.isInteger(rating)||rating<1||rating>5)return;
+      const comment=window.prompt('Share a short review:');
+      if(!comment)return;
+      await api(`/api/travel/bookings/${encodeURIComponent(id)}/reviews`,'POST',{rating,comment});
+      toast('Thank you for sharing your review.');
+    }else if(target.dataset.reportBooking){
+      const reason=window.prompt('Describe your concern. Meetaro administrators will review this report.');
+      if(!reason)return;
+      await api('/api/travel/reports','POST',{bookingId:id,reason});
+      toast('Your report has been sent to the review team.');
+    }
+    if(document.querySelector('[data-page="trips"]:not(.hide)'))await loadTravellerBookings();
+    if(document.querySelector('[data-page="host-dashboard"]:not(.hide)'))await loadHostDashboard();
+    if(document.querySelector('[data-page="admin"]:not(.hide)'))await loadAdminDashboard();
+  }catch(error){toast(error.message,true);}
+}
+
+document.querySelectorAll('[data-nav]').forEach((button)=>button.addEventListener('click',(event)=>{event.preventDefault();setPage(button.dataset.nav);}));
+$('menuButton').addEventListener('click',()=>{const open=$('nav').classList.toggle('open');$('menuButton').setAttribute('aria-expanded',String(open));});
+$('loginNav').addEventListener('click',()=>openAuth('login'));
+$('logoutNav').addEventListener('click',()=>{token='';me=null;favoriteIds=new Set();localStorage.removeItem('token');renderAccount();setPage('home');toast('You are signed out.');});
+$('authSwitch').addEventListener('click',()=>openAuth(authMode==='login'?'signup':'login'));
+document.querySelectorAll('[data-close]').forEach((button)=>button.addEventListener('click',()=>closeModal(button.dataset.close)));
+document.querySelectorAll('.modal-backdrop').forEach((backdrop)=>backdrop.addEventListener('click',(event)=>{if(event.target===backdrop)closeModal(backdrop.id);}));
+$('authForm').addEventListener('submit',async(event)=>{
+  event.preventDefault();$('authError').textContent='';
+  const signup=authMode==='signup';
+  const body={email:$('authEmail').value.trim(),password:$('authPassword').value};
+  try{
+    if(signup && !authOtpStage) {
+      Object.assign(body,{name:$('authName').value.trim(),age:$('authAge').value,gender:$('authGender').value});
+      const signupResult=await api('/api/signup','POST',body);
+      authOtpStage = true;
+      $('authHeading').textContent = 'Check your email.';
+      $('authIntro').textContent = `${signupResult.message} Verify the email address to finish creating your account.`;
+      $('authSignupFields').classList.add('hide');
+      $('authPasswordField').classList.add('hide');
+      $('authPassword').required = false;
+      $('authEmail').readOnly = true;
+      $('authOtpField').classList.remove('hide');
+      $('authOtp').required = true;
+      $('authSwitchRow').classList.add('hide');
+      $('authSubmit').textContent = 'Verify email';
+      $('authOtp').focus();
       return;
     }
-    card.style.transition = 'transform .2s ease';
-    card.style.transform = '';
-    delete card.dataset.drag;
-    window.setTimeout(() => { card.style.transition = ''; }, 220);
-  };
-  card.addEventListener('pointerup', finish);
-  card.addEventListener('pointercancel', finish);
-}
-async function swipe(like){
-  const p = visibleQueue()[0];
-  if(!p) return;
-  queue = queue.filter((person) => person.id !== p.id);
-  showCard();
-  try { const r = await api('/api/like','POST',{toId:p.id,like}); if(r.matched) toast("It's a match with "+r.name+'!'); } catch(e){ toast(e.message); }
-}
-
-// ---------- MATCHES + CHAT ----------
-async function loadMatches(){
-  const list = await api('/api/matches');
-  updateNotificationCount(list.reduce((sum, match) => sum + match.unread, 0));
-  renderMatches(list);
-}
-function renderMatches(list){
-  $('matchlist').innerHTML = list.length ? '' : '<div class="empty">No matches yet.</div>';
-  list.forEach(m => {
-    const d = document.createElement('div');
-    d.className='item'+(current && current.id===m.id?' on':'');
-    d.dataset.matchId=m.id;
-    d.innerHTML = `<span>${esc(m.user.name)}, ${m.user.age}</span>${m.unread ? `<span class="unread" aria-label="${m.unread} unread messages">${m.unread > 99 ? '99+' : m.unread}</span>` : ''}`;
-    d.onclick = () => { document.querySelectorAll('#matchlist .item').forEach(i=>i.classList.remove('on')); d.classList.add('on'); openChat(m); };
-    $('matchlist').appendChild(d);
-  });
-}
-async function openChat(m){
-  current = m;
-  $('panel').innerHTML = `<div class="phead"><b>${esc(m.user.name)}</b><div class="pactions"><button id="pbtn" class="ghost">Profile</button><button id="vbtn" class="ghost">Video call</button></div></div>
-    <div id="chatProfile" class="profile-card hide"><strong>${esc(m.user.name)}, ${m.user.age}</strong> · ${esc(m.user.location || 'Location not shared')}<br>${esc(m.user.bio || '')}<br>${(m.user.interests || []).map(esc).join(' · ')}</div>
-    <div class="msgs" id="msgs"></div><div class="note" id="note"></div>
-    <div class="compose"><input id="txt" placeholder="Type a message" maxlength="1000"><button id="sendbtn">Send</button></div>`;
-  $('pbtn').onclick = () => $('chatProfile').classList.toggle('hide');
-  await markRead(m.id);
-  const old = await api('/api/messages/'+encodeURIComponent(m.id));
-  if (!current || current.id !== m.id) return;
-  old.forEach(addBubble);
-  updateNote();
-  $('sendbtn').onclick = sendMsg;
-  $('txt').onkeydown = (e) => { if(e.key==='Enter') sendMsg(); };
-  $('vbtn').onclick = startCall;
-}
-function addBubble(msg){
-  if(document.querySelector(`[data-message-id="${CSS.escape(msg.id)}"]`)) return;
-  const d = document.createElement('div'); d.className = 'bub'+(msg.from===me.id?' me':'');
-  d.dataset.messageId = msg.id;
-  const text = document.createElement('span'); text.className = 'message-copy'; text.textContent = msg.text; d.appendChild(text);
-  if(msg.from===me.id){
-    const recipientId = current && current.user.id;
-    const delivered = (msg.deliveredTo || []).includes(recipientId);
-    const read = (msg.readBy || []).includes(recipientId);
-    const tick = document.createElement('span'); tick.className = 'tick'; tick.textContent = '✓';
-    tick.setAttribute('aria-label', 'Sent'); tick.title = 'Sent'; d.appendChild(tick);
-    setTickState(tick, delivered, read);
-  }
-  $('msgs').appendChild(d); $('msgs').scrollTop = 1e9;
-}
-function setTickState(tick, delivered, read){
-  tick.textContent = delivered ? '✓✓' : '✓';
-  tick.classList.toggle('read', read);
-  const status = read ? 'Read' : delivered ? 'Delivered' : 'Sent';
-  tick.setAttribute('aria-label', status);
-  tick.title = status;
-}
-function onReceipt(receipt){
-  const bubble = document.querySelector(`[data-message-id="${CSS.escape(receipt.messageId)}"]`);
-  const tick = bubble && bubble.querySelector('.tick');
-  if(tick) setTickState(tick, receipt.delivered || receipt.read, receipt.read);
-}
-function updateNote(){ if($('note')) $('note').textContent = me.chat ? 'Chat Premium: unlimited messages' : me.freeLeft+' free messages left'; }
-function sendMsg(){
-  const text = $('txt').value.trim(); if(!text) return;
-  socket.emit('send',{matchId:current.id,text},(r)=>{
-    if(r.error==='LIMIT'){ toast('Free messages finished. Get Chat Premium to continue.'); showTab('plans'); return; }
-    if(r.error){ toast(r.error); return; }
-    me.freeLeft = r.freeLeft; updateNote(); $('txt').value='';
-  });
-}
-function onMessage(msg){
-  const isMine = msg.from === me.id;
-  if(current && msg.matchId===current.id && $('msgs')){
-    addBubble(msg);
-    if(!isMine) markRead(msg.matchId);
-  } else if(!isMine) toast('New message');
-  refreshUnread();
-}
-function onNotification(notification){
-  if(!document.hidden || !('Notification' in window) || Notification.permission !== 'granted') return;
-  const notice = new Notification(notification.name+' sent you a message',{
-    body:String(notification.text).slice(0,120),
-    tag:'meetaro-'+notification.matchId,
-  });
-  notice.onclick = () => {
-    window.focus();
-    showTab('matches');
-    loadMatches().then(() => {
-      const match = [...document.querySelectorAll('#matchlist .item')].find((item) => item.dataset.matchId === notification.matchId);
-      if(match) match.click();
-    });
-  };
-}
-
-// ---------- PLANS ----------
-function renderPlans(){
-  const f = (t) => new Date(t).toLocaleDateString();
-  const parts = [];
-  parts.push(me.chat ? 'Chat active until '+f(me.chatUntil) : 'Chat: free ('+me.freeLeft+' messages left)');
-  parts.push(me.video ? 'Video active until '+f(me.videoUntil) : 'Video: not active');
-  if(me.autoRenew) parts.push('Auto-renewal enabled');
-  if(me.autoRenewPending) parts.push('Auto-renew mandate awaiting confirmation');
-  $('mystatus').textContent = parts.join('  |  ');
-  $('cancelRenewal').classList.toggle('hide', !me.autoRenew && !me.autoRenewPending);
-}
-document.querySelectorAll('[data-plan]').forEach(b => b.onclick = async () => {
-  window.location.href = '/checkout.html?plan=' + encodeURIComponent(b.dataset.plan);
+    const data=signup
+      ? await api('/api/signup/verify','POST',{email:$('authEmail').value.trim(),code:$('authOtp').value.trim()})
+      : await api('/api/login','POST',body);
+    token=data.token;localStorage.setItem('token',token);me=data.user;closeModal('authModal');renderAccount();toast(`Welcome${signup?' to Meetaro':''}, ${me.name.split(/\s+/)[0]}.`);
+    if(selectedHost){openBooking(selectedHost.id);}else if(location.hash==='#host')setPage('host');
+  }catch(error){$('authError').textContent=error.message;}
 });
-$('cancelRenewal').onclick = async () => {
-  try {
-    const result = await api('/api/subscription/cancel','POST',{});
-    me = await api('/api/me');
-    renderPlans();
-    toast(result.message);
-  } catch(e){ toast(e.message); }
-};
+$('authResendOtp').addEventListener('click',async()=>{
+  $('authError').textContent='';
+  try{
+    const result=await api('/api/signup/resend','POST',{email:$('authEmail').value.trim()});
+    $('authError').textContent=result.message;
+  }catch(error){$('authError').textContent=error.message;}
+});
+$('searchForm').addEventListener('submit',(event)=>{event.preventDefault();runSearch();});
+$('serviceFilter').addEventListener('change',runSearch);
+$('genderFilter').addEventListener('change',runSearch);
+$('sortFilter').addEventListener('change',renderListings);
+$('resultsBudget').addEventListener('input',renderListings);
+$('interestFilter').addEventListener('change',runSearch);
+$('arrivalDate').addEventListener('change',()=>{$('departureDate').min=dayAfter($('arrivalDate').value);if($('departureDate').value<$('departureDate').min)$('departureDate').value=$('departureDate').min;});
+document.querySelectorAll('[data-city]').forEach((button)=>button.addEventListener('click',()=>{$('searchCity').value=button.dataset.city;runSearch();}));
+for(const checkbox of ['offerAccommodation','offerFood','offerExploration'])$(checkbox).addEventListener('change',toggleServiceFields);
+$('hostApplicationForm').addEventListener('submit',async(event)=>{
+  event.preventDefault();
+  if(!me){openAuth('login');return;}
+  const services={};
+  if($('offerAccommodation').checked)services.accommodation={enabled:true,pricePerNight:$('accommodationPrice').value,propertyType:$('propertyType').value,capacity:$('capacity').value,amenities:$('amenities').value.split(',').map((part)=>part.trim()).filter(Boolean),houseRules:$('houseRules').value,hostLivesOnsite:$('hostLivesOnsite').checked,propertyAddress:$('propertyAddress').value};
+  if($('offerFood').checked)services.food={enabled:true,pricePerMeal:$('foodPrice').value,menu:$('foodMenu').value,dietaryOptions:$('dietaryOptions').value,allergens:$('allergens').value};
+  if($('offerExploration').checked)services.exploration={enabled:true,pricePerHour:$('explorationPrice').value,experiences:$('experiences').value};
+  const body={legalName:$('hostLegalName').value,phone:$('hostPhone').value,publicName:$('hostPublicName').value,gender:$('hostGender').value,city:$('hostCity').value,area:$('hostArea').value,languages:$('hostLanguages').value.split(',').map((part)=>part.trim()).filter(Boolean),availabilityFrom:$('hostAvailabilityFrom').value,availabilityTo:$('hostAvailabilityTo').value,introduction:$('hostIntroduction').value,policyAccepted:$('policyAccepted').checked,services};
+  try{const result=await api('/api/travel/host/applications','POST',body);me.role='host_applicant';renderAccount();toast(result.message);setPage('host-dashboard');}
+  catch(error){toast(error.message,true);}
+});
+$('bookingForm').addEventListener('submit',async(event)=>{
+  event.preventDefault();$('bookingError').textContent='';
+  if(!selectedHost)return;
+  const genderPreference=$('bookingGenderPreference').value;
+  const mismatch=genderPreference!=='none'&&genderPreference!==selectedHost.host.gender;
+  let consentToPreferenceMismatch=false;
+  if(mismatch){
+    consentToPreferenceMismatch=window.confirm(`This host's voluntarily shared gender does not match your selected preference. Your request will be sent to the host for their decision. A booking is only confirmed after the host accepts and you confirm. Continue?`);
+    if(!consentToPreferenceMismatch)return;
+  }
+  const body={listingId:selectedHost.id,arrivalDate:$('bookingArrival').value,departureDate:$('bookingDeparture').value,travellers:$('bookingTravellers').value,services:selectedServiceKeys(),mealCount:$('bookingMealCount').value,explorationHours:$('bookingExplorationHours').value,genderPreference,consentToPreferenceMismatch,foodPreferences:$('bookingFoodPreferences').value,introduction:$('bookingIntroduction').value};
+  try{const result=await api('/api/travel/bookings','POST',body);closeModal('bookingModal');toast('Request sent. The host will review your dates and final details.');setPage('trips');}
+  catch(error){$('bookingError').textContent=error.message;}
+});
+document.addEventListener('click',(event)=>handleRecordAction(event));
+document.querySelectorAll('[data-nav="safety"]').forEach((button)=>button.addEventListener('click',()=>setPage('safety')));
+window.addEventListener('keydown',(event)=>{if(event.key==='Escape')document.querySelectorAll('.modal-backdrop:not(.hide)').forEach((modal)=>closeModal(modal.id));});
 
-// ---------- VIDEO CALL (WebRTC) ----------
-let pc, localStream, callMatch, pendingIce = [];
-function setupPC(){
-  pc = new RTCPeerConnection({ iceServers:[{urls:'stun:stun.l.google.com:19302'}] });
-  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-  pc.ontrack = (e) => { $('remote').srcObject = e.streams[0]; };
-  pc.onicecandidate = (e) => { if(e.candidate) socket.emit('call',{matchId:callMatch,type:'ice',data:e.candidate}); };
-  $('local').srcObject = localStream; $('call').classList.remove('hide');
+async function start() {
+  $('copyrightYear').textContent = String(new Date().getFullYear());
+  setDefaultDates();
+  document.querySelectorAll('#bookingForm input,#bookingForm select,#bookingForm textarea').forEach((field)=>field.addEventListener('input',updateQuote));
+  await loadListings();
+  if(token){
+    try{me=await api('/api/me');}
+    catch{token='';me=null;favoriteIds=new Set();localStorage.removeItem('token');}
+    if(me?.role==='traveller'){
+      try{const favorites=await api('/api/travel/favorites');favoriteIds=new Set(favorites.map((item)=>item.id));}
+      catch(error){toast(error.message,true);}
+    }
+  }
+  renderAccount();
+  if(location.hash==='#host')setPage('host');
+  else setPage('home');
 }
-async function getMedia(){ return navigator.mediaDevices.getUserMedia({video:true,audio:true}); }
-async function startCall(){
-  if(!me.video){ toast('Video calls need Video Premium or Combo.'); showTab('plans'); return; }
-  try {
-    callMatch = current.id; localStream = await getMedia(); setupPC();
-    const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
-    socket.emit('call',{matchId:callMatch,type:'offer',data:offer},(r)=>{
-      if(r && r.error){ endCall(false); toast(r.error==='VIDEO_PREMIUM'?'Video Premium required.':r.error); }
-    });
-  } catch(e){ endCall(false); toast('Could not start camera/microphone: '+e.message); }
-}
-async function onCall({matchId,type,data}){
-  try {
-    if(type==='offer'){
-      if(!confirm('Incoming video call. Accept?')){ socket.emit('call',{matchId,type:'end'}); return; }
-      callMatch = matchId; localStream = await getMedia(); setupPC();
-      await pc.setRemoteDescription(data);
-      pendingIce.forEach(c => pc.addIceCandidate(c)); pendingIce = [];
-      const ans = await pc.createAnswer(); await pc.setLocalDescription(ans);
-      socket.emit('call',{matchId,type:'answer',data:ans});
-    } else if(type==='answer'){ await pc.setRemoteDescription(data); pendingIce.forEach(c=>pc.addIceCandidate(c)); pendingIce=[]; }
-    else if(type==='ice'){ if(pc && pc.remoteDescription) pc.addIceCandidate(data).catch(()=>{}); else pendingIce.push(data); }
-    else if(type==='end'){ endCall(false); }
-  } catch(e){ endCall(false); toast('Could not connect the video call. Check camera permissions and connection.'); }
-}
-function endCall(notify=true){
-  if(notify && callMatch) socket.emit('call',{matchId:callMatch,type:'end'});
-  if(pc){ pc.close(); pc=null; }
-  if(localStream){ localStream.getTracks().forEach(t=>t.stop()); localStream=null; }
-  pendingIce = []; $('call').classList.add('hide');
-}
-$('endcall').onclick = () => endCall(true);
-
-if(token) start();
+start();
 </script>
 </body>
 </html>

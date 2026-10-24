@@ -1,7 +1,7 @@
 {
   "name": "meetaro",
   "version": "1.0.0",
-  "description": "Starter dating app: matching, limited free chat, premium plans, video calls",
+  "description": "Meetaro local travel marketplace for travellers and approved hosts",
   "main": "server.js",
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
@@ -11,6 +11,6 @@
     "bcryptjs": "^2.4.3",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
-    "socket.io": "^4.7.5"
+    "nodemailer": "^10.2.1"
   }
 }

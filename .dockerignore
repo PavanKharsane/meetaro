@@ -1,0 +1,10 @@
+node_modules
+.git
+.github
+.env
+.env.*
+!.env.example
+coverage
+.nyc_output
+npm-debug.log
+k8s

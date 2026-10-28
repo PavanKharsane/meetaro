@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     agent any
 
@@ -25,6 +26,23 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('Meetaro-SonarQube') {
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=meetaro \
+                            -Dsonar.projectName=Meetaro \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=node_modules/**,coverage/**,.git/**,**/*.test.js,**/*.spec.js
+                        """
+                    }
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -38,7 +56,7 @@ pipeline {
             steps {
                 sh '''
                     aws ecr get-login-password --region "$AWS_REGION" |
-                    docker login --username AWS --password-stdin "$ECR_REPOSITORY"
+                    docker login --username AWS --password-stdin "646966486222.dkr.ecr.ap-south-1.amazonaws.com"
                 '''
             }
         }
@@ -59,3 +77,4 @@ pipeline {
         }
     }
 }
+
